@@ -15,8 +15,13 @@ public class RegionService {
     @Autowired
     public RegionService(RegionRepository regionRepository) { this.regionRepository = regionRepository; }
 
+    private void admcdValidation(String admcd) {
+        // admcd의 길이가 정확히 10자리가 맞는지 확인
+        if (admcd.length() != 10) { throw new IllegalArgumentException("admcd must be 10 characters"); }
+    }
 
     public Region findByAdmcd(String admcd) {
+        admcdValidation(admcd);
         return regionRepository.findByAdmcd(admcd);
     }
 
@@ -26,6 +31,7 @@ public class RegionService {
     }
 
     public List<Region> findSubRegionListByAdmcd(String admcd) {
+        admcdValidation(admcd);
         if (admcd.startsWith("000", 2)) {
             // admcd가 대분류 행정동코드일 때 -> 해당 대분류의 중분류 행정동코드 검색
             String admcdLike = admcd.substring(0, 2).concat("___00000");
