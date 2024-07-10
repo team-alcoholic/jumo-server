@@ -5,6 +5,6 @@ import team_alcoholic.jumo_server.region.domain.Region;
 import java.util.List;
 
 public interface RegionRepository {
-    Region findById(String id);
-    List<Region> findByIdLike(String id);
+    Region findByAdmcd(String admcd);
+    List<Region> findByAdmcdLike(String admcd);
 }

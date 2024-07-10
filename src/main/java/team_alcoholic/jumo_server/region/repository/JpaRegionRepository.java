@@ -13,14 +13,14 @@ public class JpaRegionRepository implements RegionRepository {
     public JpaRegionRepository(EntityManager em) { this.em = em;}
 
     @Override
-    public Region findById(String id) {
-        return em.find(Region.class, id);
+    public Region findByAdmcd(String admcd) {
+        return em.find(Region.class, admcd);
     }
 
     @Override
-    public List<Region> findByIdLike(String id) {
-        return em.createQuery("select m from Region m where admcd like :id", Region.class)
-            .setParameter("id", id)
+    public List<Region> findByAdmcdLike(String admcd) {
+        return em.createQuery("select m from Region m where admcd like :admcd", Region.class)
+            .setParameter("admcd", admcd)
             .getResultList();
     }
 }

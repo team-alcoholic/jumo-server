@@ -19,9 +19,9 @@ public class RegionController {
     @Autowired
     public RegionController(RegionService regionService) { this.regionService = regionService; }
 
-    @GetMapping("{id}")
-    public Region getRegionById(@PathVariable String id) {
-        return regionService.findById(id);
+    @GetMapping("{admcd}")
+    public Region getRegionById(@PathVariable String admcd) {
+        return regionService.findByAdmcd(admcd);
     }
 
     @GetMapping("majorList")
@@ -29,8 +29,8 @@ public class RegionController {
         return regionService.findMajorRegionList();
     }
 
-    @GetMapping("subList/{id}")
-    public List<Region> getSubRegionListById(@PathVariable String id) {
-        return regionService.findSubRegionListById(id);
+    @GetMapping("subList/{admcd}")
+    public List<Region> getSubRegionListById(@PathVariable String admcd) {
+        return regionService.findSubRegionListByAdmcd(admcd);
     }
 }
