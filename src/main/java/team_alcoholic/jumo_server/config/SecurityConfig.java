@@ -1,20 +1,24 @@
 package team_alcoholic.jumo_server.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import team_alcoholic.jumo_server.user.repository.UserRepository;
 import team_alcoholic.jumo_server.auth.service.OAuth2UserService;
+import team_alcoholic.jumo_server.user.service.UserService;
 
 /**
  * Spring Security 설정 클래스
  */
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final OAuth2UserService oAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -28,7 +32,7 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
-                                .userService(new OAuth2UserService())
+                                .userService(oAuth2UserService)
                         )
                 );
 
