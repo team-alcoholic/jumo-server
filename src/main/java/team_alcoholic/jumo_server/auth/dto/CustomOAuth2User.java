@@ -3,17 +3,17 @@ package team_alcoholic.jumo_server.auth.dto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import team_alcoholic.jumo_server.user.dto.UserDTO;
 
 import java.util.*;
 
 /**
- * OAuth2User 인터페이스를 구현한 클래스
  * 세션에 담기는 사용자 정보를 담는 DTO
  */
 @RequiredArgsConstructor
-public class OAuth2UserPrincipal implements OAuth2User {
+public class CustomOAuth2User implements OAuth2User {
 
-    private final OAuth2Response oAuth2Response;
+    private final UserDTO userDTO;
 
     /**
      * 사용자 속성을 반환하는 메소드
@@ -22,11 +22,11 @@ public class OAuth2UserPrincipal implements OAuth2User {
     @Override
     public Map<String, Object> getAttributes() {
         Map<String, Object> attributes = new HashMap<>();
-        attributes.put("provider", oAuth2Response.getProvider());
-        attributes.put("providerId", oAuth2Response.getProviderId());
-        attributes.put("profileNickname", oAuth2Response.getProfileNickname());
-        attributes.put("profileImage", oAuth2Response.getProfileImage());
-        attributes.put("profileThumbnailImage", oAuth2Response.getProfileThumbnailImage());
+        attributes.put("provider", userDTO.getProvider());
+        attributes.put("providerId", userDTO.getProviderId());
+        attributes.put("profileNickname", userDTO.getProfileNickname());
+        attributes.put("profileImage", userDTO.getProfileImage());
+        attributes.put("profileThumbnailImage", userDTO.getProfileThumbnailImage());
         return attributes;
     }
 
@@ -46,7 +46,7 @@ public class OAuth2UserPrincipal implements OAuth2User {
      */
     @Override
     public String getName() {
-        return oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
+        return userDTO.getProvider() + " " + userDTO.getProviderId();
     }
 
 }
