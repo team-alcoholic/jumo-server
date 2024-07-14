@@ -39,6 +39,9 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
