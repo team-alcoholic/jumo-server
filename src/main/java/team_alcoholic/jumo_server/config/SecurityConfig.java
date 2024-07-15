@@ -26,17 +26,28 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
                                 .userService(oAuth2UserService)
                         )
+                        .successHandler((request, response, authentication) -> {
+                            response.sendRedirect("http://localhost:3000");
+                        })
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("http://localhost:3000/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
                 );
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/", "/oauth2/**", "/login/**", "/logout").permitAll()
                         .anyRequest().authenticated()
                 );
 
         return http.build();
     }
+
+
 }
