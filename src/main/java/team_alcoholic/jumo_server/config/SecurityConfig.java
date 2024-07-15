@@ -18,7 +18,6 @@ public class SecurityConfig {
     private final OAuth2UserService oAuth2UserService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -27,7 +26,6 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-
                                 .userService(oAuth2UserService)
                         )
                         .successHandler((request, response, authentication) -> {
