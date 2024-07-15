@@ -8,9 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import team_alcoholic.jumo_server.user.repository.UserRepository;
 import team_alcoholic.jumo_server.auth.service.OAuth2UserService;
-import team_alcoholic.jumo_server.user.service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -46,7 +44,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/oauth2/**", "/login/**", "/logout").permitAll()
+                        .requestMatchers("/", "/oauth2/**", "/login/**", "/logout","/region/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
