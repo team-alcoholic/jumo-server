@@ -8,7 +8,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import team_alcoholic.jumo_server.user.repository.UserRepository;
 import team_alcoholic.jumo_server.auth.service.OAuth2UserService;
+import team_alcoholic.jumo_server.user.service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -18,6 +20,7 @@ public class SecurityConfig {
     private final OAuth2UserService oAuth2UserService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -26,6 +29,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
+
                                 .userService(oAuth2UserService)
                         )
                         .successHandler((request, response, authentication) -> response.sendRedirect("http://localhost:3000"))
