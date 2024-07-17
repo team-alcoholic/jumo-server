@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import team_alcoholic.jumo_server.meeting.domain.Meeting;
+import team_alcoholic.jumo_server.meeting.dto.MeetingDto;
 import team_alcoholic.jumo_server.meeting.service.MeetingService;
 
 import java.util.List;
@@ -18,6 +19,11 @@ public class MeetingController {
 
     @Autowired
     public MeetingController(MeetingService meetingService) { this.meetingService = meetingService; }
+
+    @GetMapping("{id}")
+    public MeetingDto getMeetingById(@PathVariable("id") Long id) {
+        return meetingService.findMeetingById(id);
+    }
 
     @GetMapping("list/latest")
     public List<Meeting> getLatestMeetingList() {

@@ -3,6 +3,7 @@ package team_alcoholic.jumo_server.meeting.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.meeting.domain.Meeting;
+import team_alcoholic.jumo_server.meeting.dto.MeetingDto;
 import team_alcoholic.jumo_server.meeting.repository.MeetingRepository;
 
 import java.util.List;
@@ -14,6 +15,10 @@ public class MeetingService {
 
     @Autowired
     public MeetingService(MeetingRepository meetingRepository) { this.meetingRepository = meetingRepository;}
+
+    public MeetingDto findMeetingById(Long id) {
+        return meetingRepository.findMeetingById(id);
+    }
 
     public List<Meeting> findLatestMeetingList() {
         return meetingRepository.findLatestMeetingList();
