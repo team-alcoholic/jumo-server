@@ -22,15 +22,16 @@ public class Meeting {
     private LocalDateTime fixAt;
     private String region;
     private String place;
-    private String liquor;
+    private String liquors;
     private Integer participatesMin;
     private Integer participatesMax;
     private Integer payment;
-    private boolean paymentMethod;
+    private String paymentMethod;
     private boolean byob;
     private Integer byobMin;
     private Integer byobMax;
     private String description;
+    private String thumbnailImage;
     private String externalService;
     private String externalLink;
 }

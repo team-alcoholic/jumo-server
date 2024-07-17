@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.meeting.domain.Meeting;
 import team_alcoholic.jumo_server.meeting.dto.MeetingDto;
+import team_alcoholic.jumo_server.meeting.dto.MeetingListDto;
 import team_alcoholic.jumo_server.meeting.repository.MeetingRepository;
 
 import java.util.List;
@@ -20,11 +21,11 @@ public class MeetingService {
         return meetingRepository.findMeetingById(id);
     }
 
-    public List<Meeting> findLatestMeetingList() {
+    public List<MeetingListDto> findLatestMeetingList() {
         return meetingRepository.findLatestMeetingList();
     }
 
-    public List<Meeting> findLatestMeetingListById(Long id) {
+    public List<MeetingListDto> findLatestMeetingListById(Long id) {
         return meetingRepository.findLatestMeetingListById(id);
     }
 }

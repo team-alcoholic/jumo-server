@@ -29,20 +29,14 @@ public class JpaMeetingRepository implements MeetingRepository{
     }
 
     @Override
-    public List<Meeting> findLatestMeetingList() {
-        return em.createQuery("select m from Meeting m order by m.id desc limit 30", Meeting.class)
+    public List<MeetingListDto> findLatestMeetingList() {
+        return em.createQuery("select m from Meeting m order by m.id desc limit 30", MeetingListDto.class)
             .getResultList();
     }
-//    public List<MeetingListDto> findLatestMeetingList() {
-//        return em.createQuery("select new MeetingListDto(" +
-//                "m." +
-//                ") from Meeting m", MeetingListDto.class)
-//            .getResultList();
-//    }
 
     @Override
-    public List<Meeting> findLatestMeetingListById(Long id) {
-        return em.createQuery("select m from Meeting m where m.id<:id order by m.id desc limit 30", Meeting.class)
+    public List<MeetingListDto> findLatestMeetingListById(Long id) {
+        return em.createQuery("select m from Meeting m where m.id<:id order by m.id desc limit 30", MeetingListDto.class)
             .setParameter("id", id)
             .getResultList();
     }
