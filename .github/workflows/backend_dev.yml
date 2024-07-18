@@ -28,7 +28,9 @@ jobs:
 
     - name: Set application properties from GitHub Secrets
       run: |
-        echo ${{ secrets.APP_CONFIG_JSON }} > config.json
+        cat <<EOF > config.json
+${{ secrets.APP_CONFIG_JSON }}
+EOF
         jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' config.json > src/main/resources/application.properties
 
     - name: Build with Gradle Wrapper
@@ -46,7 +48,7 @@ jobs:
     - name: Docker Hub push
       run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/jumo_back_dev
 
-  deploy:
+  deploy-to-az1:
     needs: build-docker-image
     runs-on: [self-hosted]
     steps:
