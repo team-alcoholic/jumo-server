@@ -2,6 +2,7 @@ package team_alcoholic.jumo_server.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,6 +21,9 @@ public class SecurityConfig {
     private final OAuth2UserService oAuth2UserService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    @Value("${service.url}")
+    private String serviceUrl;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -33,7 +37,7 @@ public class SecurityConfig {
                                 .userService(oAuth2UserService)
                         )
                         .successHandler((request, response, authentication) -> {
-                            response.sendRedirect("http://localhost:3000");
+                            response.sendRedirect(serviceUrl);
                         })
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
