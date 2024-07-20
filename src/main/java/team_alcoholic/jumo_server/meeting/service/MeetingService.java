@@ -33,11 +33,8 @@ public class MeetingService {
         return meeting;
     }
 
-    public List<MeetingListDto> findLatestMeetingList() {
-        return meetingRepository.findLatestMeetingList();
-    }
-
-    public List<MeetingListDto> findLatestMeetingListById(Long id) {
-        return meetingRepository.findLatestMeetingListById(id);
+    public List<MeetingListDto> findLatestMeetingList(int limit, Long cursor) {
+        if (cursor==0) return meetingRepository.findLatestMeetingList(limit);
+        return meetingRepository.findLatestMeetingListById(limit, cursor);
     }
 }

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface MeetingRepository {
     MeetingDto findMeetingById(Long id);
-    List<MeetingListDto> findLatestMeetingList();
-    List<MeetingListDto> findLatestMeetingListById(Long id);
+    List<MeetingListDto> findLatestMeetingList(int limit);
+    List<MeetingListDto> findLatestMeetingListById(int limit, Long cursor);
 }
