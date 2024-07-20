@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.meeting.domain.Meeting;
 import team_alcoholic.jumo_server.meeting.dto.MeetingDto;
 import team_alcoholic.jumo_server.meeting.dto.MeetingListDto;
+import team_alcoholic.jumo_server.meeting.dto.MeetingListResponseDto;
 import team_alcoholic.jumo_server.meeting.repository.MeetingRepository;
 import team_alcoholic.jumo_server.region.domain.Region;
 import team_alcoholic.jumo_server.region.repository.RegionRepository;
@@ -33,8 +34,10 @@ public class MeetingService {
         return meeting;
     }
 
-    public List<MeetingListDto> findLatestMeetingList(int limit, Long cursor) {
-        if (cursor==0) return meetingRepository.findLatestMeetingList(limit);
-        return meetingRepository.findLatestMeetingListById(limit, cursor);
+    public MeetingListResponseDto findLatestMeetingList(int limit, Long cursor) {
+        List<MeetingListDto> meetings;
+        if (cursor==0) meetings = meetingRepository.findLatestMeetingList(limit+1);
+        else meetings = meetingRepository.findLatestMeetingListById(limit+1, cursor);
+        return new MeetingListResponseDto(meetings, meetings.get(meetings.size()-1).getId(), (meetings.size()<limit+1));
     }
 }

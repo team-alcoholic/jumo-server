@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.meeting.domain.Meeting;
 import team_alcoholic.jumo_server.meeting.dto.MeetingDto;
 import team_alcoholic.jumo_server.meeting.dto.MeetingListDto;
+import team_alcoholic.jumo_server.meeting.dto.MeetingListResponseDto;
 import team_alcoholic.jumo_server.meeting.service.MeetingService;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class MeetingController {
     }
 
     @GetMapping()
-    public List<MeetingListDto> getLatestMeetingList(
+    public MeetingListResponseDto getLatestMeetingList(
         @RequestParam(required = false, defaultValue = "latest") String sort,
         @RequestParam(required = false, defaultValue = "30") int limit,
         @RequestParam(required = false, defaultValue = "0") Long cursor
