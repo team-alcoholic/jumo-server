@@ -38,6 +38,8 @@ public class MeetingService {
         List<MeetingListDto> meetings;
         if (cursor==0) meetings = meetingRepository.findLatestMeetingList(limit+1);
         else meetings = meetingRepository.findLatestMeetingListById(limit+1, cursor);
-        return new MeetingListResponseDto(meetings, meetings.get(meetings.size()-1).getId(), (meetings.size()<limit+1));
+        boolean eof = (meetings.size()<limit+1);
+        if (!eof) meetings.remove(meetings.size()-1);
+        return new MeetingListResponseDto(meetings, meetings.get(meetings.size()-1).getId(), eof);
     }
 }
