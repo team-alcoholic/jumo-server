@@ -1,19 +1,17 @@
 package team_alcoholic.jumo_server.meeting.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.meeting.domain.Meeting;
 import team_alcoholic.jumo_server.meeting.dto.MeetingDto;
 import team_alcoholic.jumo_server.meeting.dto.MeetingListDto;
+import team_alcoholic.jumo_server.meeting.dto.MeetingListResponseDto;
 import team_alcoholic.jumo_server.meeting.service.MeetingService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("meeting")
+@RequestMapping("meetings")
 public class MeetingController {
 
     private final MeetingService meetingService;
@@ -26,13 +24,15 @@ public class MeetingController {
         return meetingService.findMeetingById(id);
     }
 
-    @GetMapping("list/latest")
-    public List<MeetingListDto> getLatestMeetingList() {
-        return meetingService.findLatestMeetingList();
-    }
-
-    @GetMapping("list/latest/{id}")
-    public List<MeetingListDto> getLatestMeetingListById(@PathVariable Long id) {
-        return meetingService.findLatestMeetingListById(id);
+    @GetMapping()
+    public MeetingListResponseDto getLatestMeetingList(
+        @RequestParam(required = false, defaultValue = "latest") String sort,
+        @RequestParam(required = false, defaultValue = "30") int limit,
+        @RequestParam(required = false, defaultValue = "0") Long cursor
+    ) {
+        switch (sort) {
+            default:
+                return meetingService.findLatestMeetingList(limit, cursor);
+        }
     }
 }
