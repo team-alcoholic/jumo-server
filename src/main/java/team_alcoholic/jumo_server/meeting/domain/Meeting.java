@@ -2,12 +2,13 @@ package team_alcoholic.jumo_server.meeting.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import team_alcoholic.jumo_server.common.domain.BaseTimeEntity;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-public class Meeting {
+public class Meeting extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
