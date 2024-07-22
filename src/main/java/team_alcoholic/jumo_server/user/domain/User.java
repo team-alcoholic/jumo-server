@@ -2,11 +2,13 @@ package team_alcoholic.jumo_server.user.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.auth.dto.OAuth2Response;
+import team_alcoholic.jumo_server.common.domain.BaseTimeEntity;
 
 
 /**
@@ -15,10 +17,10 @@ import team_alcoholic.jumo_server.auth.dto.OAuth2Response;
 @Entity
 @Getter
 @Setter
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(generator = "auto-increment")
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
     private String provider;
