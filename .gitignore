@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 # application-*.properties 파일을 제외
-**/application-*.properties
+**/application*.properties
 
 ### STS ###
 .apt_generated
