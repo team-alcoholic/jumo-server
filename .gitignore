@@ -29,6 +29,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### environment ###
+.env.*
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -39,3 +43,4 @@ out/
 ### VS Code ###
 .vscode/
 
+.
