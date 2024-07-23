@@ -64,13 +64,16 @@ jobs:
           sudo docker network prune -f || true
           sudo docker system prune -a -f || true
 
+      - name: ecr get-login-password
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev
       - name: Pull Docker image from AWS ECR
         run: |
-          sudo docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
 
       - name: Run new Docker container
         run: |
-          sudo docker run --rm -it -d -p 80:8080 --name jumo_back_dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+          docker run --rm -it -d -p 80:8080 --name jumo_back_dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
 
       - name: Clean up unused Docker images after deployment
         run: |
