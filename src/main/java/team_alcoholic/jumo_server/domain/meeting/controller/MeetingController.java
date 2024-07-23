@@ -1,5 +1,6 @@
 package team_alcoholic.jumo_server.domain.meeting.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingDto;
@@ -8,12 +9,10 @@ import team_alcoholic.jumo_server.domain.meeting.service.MeetingService;
 
 @RestController
 @RequestMapping("meetings")
+@RequiredArgsConstructor
 public class MeetingController implements MeetingApi {
 
     private final MeetingService meetingService;
-
-    @Autowired
-    public MeetingController(MeetingService meetingService) { this.meetingService = meetingService; }
 
     @GetMapping("{id}")
     public MeetingDto getMeetingById(@PathVariable("id") Long id) {

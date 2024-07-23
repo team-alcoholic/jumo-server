@@ -1,5 +1,6 @@
 package team_alcoholic.jumo_server.domain.meeting.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingDto;
@@ -12,19 +13,11 @@ import team_alcoholic.jumo_server.domain.region.repository.RegionRepository;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MeetingService {
 
     private final MeetingRepository meetingRepository;
     private final RegionRepository regionRepository;
-
-    @Autowired
-    public MeetingService(
-        MeetingRepository meetingRepository,
-        RegionRepository regionRepository
-    ) {
-        this.meetingRepository = meetingRepository;
-        this.regionRepository = regionRepository;
-    }
 
     public MeetingDto findMeetingById(Long id) {
         MeetingDto meeting = meetingRepository.findMeetingById(id);

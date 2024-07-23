@@ -1,5 +1,6 @@
 package team_alcoholic.jumo_server.domain.region.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.domain.region.repository.RegionRepository;
@@ -8,12 +9,10 @@ import team_alcoholic.jumo_server.domain.region.domain.Region;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class RegionService {
 
     private final RegionRepository regionRepository;
-
-    @Autowired
-    public RegionService(RegionRepository regionRepository) { this.regionRepository = regionRepository; }
 
     private void admcdValidation(String admcd) {
         // admcd의 길이가 정확히 10자리가 맞는지 확인
