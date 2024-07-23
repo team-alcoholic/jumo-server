@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/region")
-public class RegionController {
+public class RegionController implements RegionApi {
 
     private final RegionService regionService;
 

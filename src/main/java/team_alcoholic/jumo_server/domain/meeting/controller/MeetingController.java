@@ -8,7 +8,7 @@ import team_alcoholic.jumo_server.domain.meeting.service.MeetingService;
 
 @RestController
 @RequestMapping("meetings")
-public class MeetingController {
+public class MeetingController implements MeetingApi {
 
     private final MeetingService meetingService;
 
