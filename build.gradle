@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'team-alcoholic'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
     toolchain {
@@ -32,8 +32,10 @@ dependencies {
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
-
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Springdoc: swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
     // database
     runtimeOnly 'com.h2database:h2'
