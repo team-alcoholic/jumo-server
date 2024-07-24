@@ -5,6 +5,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# application-*.properties 파일을 제외
+**/application*.properties
+
 ### STS ###
 .apt_generated
 .classpath
@@ -26,6 +29,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### environment ###
+.env.*
+
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -35,3 +42,5 @@ out/
 
 ### VS Code ###
 .vscode/
+
+.
