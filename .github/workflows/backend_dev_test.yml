@@ -41,22 +41,17 @@ jobs:
       # 디버깅용 스텝
       - name: Print environment variables
         run: |
-          echo export
+          echo $DEV_JUMO_SERVER
+          export
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-#      - name: Set application properties from GitHub Secrets
-#        run: |
-#          echo '${{ secrets.APP_CONFIG_JSON }}' > config.json
-#          mkdir -p src/main/resources
-#          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' config.json > src/main/resources/application.properties
-
-      - name: Build with Gradle Wrapper
-        run: ./gradlew build
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+#
+#      - name: Grant execute permission for gradlew
+#        run: chmod +x gradlew
+#
+#      - name: Build with Gradle Wrapper
+#        run: ./gradlew build
 
 #      - name: Login to Amazon ECR
 #        uses: aws-actions/amazon-ecr-login@v1
