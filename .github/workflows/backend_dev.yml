@@ -38,6 +38,12 @@ jobs:
             ,dev/jumo/server
           # comma 오타 아님
 
+      - name: Print environment variables
+        run: |
+          echo "DB_URL=${{ secrets.DB_URL }}"
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}"
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
