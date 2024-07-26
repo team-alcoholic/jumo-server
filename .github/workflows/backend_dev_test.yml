@@ -1,9 +1,9 @@
 name: JUMO server-dev CD
 
 on:
-  pull_request:
+  push:
     branches:
-      - 'develop'
+      - 'feature/BYOB-129'
 
 jobs:
   build-docker-image:
