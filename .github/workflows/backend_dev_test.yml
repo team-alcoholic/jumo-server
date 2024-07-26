@@ -35,15 +35,13 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
-            ,dev/jumo/server
+            dev/jumo/server
           # comma 오타 아님
 
       # 디버깅용 스텝
       - name: Print environment variables
         run: |
-          echo $DB_URL
-          echo $DB_USERNAME
-          echo $DB_PASSWORD
+          echo export
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
