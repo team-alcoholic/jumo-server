@@ -41,10 +41,9 @@ jobs:
       # 디버깅용 스텝
       - name: Print environment variables
         run: |
-          echo "DB_NAME_DEV=${{ secrets.DB_NAME_DEV }}"
-          echo "DB_URL_DEV=${{ secrets.DB_URL_DEV }}"
-          echo "DB_USER_DEV=${{ secrets.DB_USER_DEV }}"
-          echo "DB_PW_DEV=${{ secrets.DB_PW_DEV }}"
+          echo "DB_URL=${{ secrets.DB_URL }}"
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}"
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
