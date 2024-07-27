@@ -30,6 +30,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: asfd
+        run: export
+
       # AWS Secrets Manager에서 관리하는 보안 암호를 환경변수로 가져오는 단계
       - name: AWS Secrets Manager에서 환경변수 가져오기
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
@@ -45,14 +48,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      #      - name: Set application properties from GitHub Secrets
-      #        run: |
-      #          echo '${{ secrets.APP_CONFIG_JSON }}' > config.json
-      #          mkdir -p src/main/resources
-      #          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' config.json > src/main/resources/application.properties
-
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew build -i
+        env:
+          SPRING_PROFILES_ACTIVE: dev
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
