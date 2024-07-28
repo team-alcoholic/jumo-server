@@ -1,0 +1,87 @@
+name: JUMO server-dev CD
+
+on:
+  push:
+    branches:
+      - 'feature/BYOB-130'
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # JDK 설치
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # AWS Secrets Manager, AWS ECR 사용을 위해 AWS 자격 증명을 수행하는 단계
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # AWS Secrets Manager에서 관리하는 보안 암호를 환경변수로 가져오는 단계
+#      - name: AWS Secrets Manager에서 환경변수 가져오기
+#        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+#        with:
+#          secret-ids: |
+#            ,dev/jumo/server
+#          # comma 오타 아님
+#          parse-json-secrets: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle Wrapper
+        run: ./gradlew build -i
+        env:
+          SPRING_PROFILES_ACTIVE: dev
+
+#      - name: Login to Amazon ECR
+#        uses: aws-actions/amazon-ecr-login@v1
+#
+#      - name: Build and push Docker image to AWS ECR
+#        run: |
+#          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest .
+#          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+#
+#  deploy:
+#    needs: build-docker-image
+#    runs-on: [dev]
+#    steps:
+#      - name: Clean up Docker system before pulling
+#        run: |
+#          sudo docker stop $(sudo docker ps -aq) || true
+#          sudo docker container prune -f || true
+#          sudo docker image prune -a -f || true
+#          sudo docker volume prune -f || true
+#          sudo docker network prune -f || true
+#          sudo docker system prune -a -f || true
+#
+#      - name: ecr get-login-password
+#        run: |
+#          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev
+#      - name: Pull Docker image from AWS ECR
+#        run: |
+#          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+#
+#      - name: Run new Docker container
+#        run: |
+#          docker run --rm -it -d -p 80:8080 --name jumo_back_dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+#
+#      - name: Clean up unused Docker images after deployment
+#        run: |
+#          sudo docker image prune -a -f || true
