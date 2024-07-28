@@ -50,38 +50,38 @@ jobs:
         env:
           SPRING_PROFILES_ACTIVE: dev
 
-#      - name: Login to Amazon ECR
-#        uses: aws-actions/amazon-ecr-login@v1
-#
-#      - name: Build and push Docker image to AWS ECR
-#        run: |
-#          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest .
-#          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
-#
-#  deploy:
-#    needs: build-docker-image
-#    runs-on: [dev]
-#    steps:
-#      - name: Clean up Docker system before pulling
-#        run: |
-#          sudo docker stop $(sudo docker ps -aq) || true
-#          sudo docker container prune -f || true
-#          sudo docker image prune -a -f || true
-#          sudo docker volume prune -f || true
-#          sudo docker network prune -f || true
-#          sudo docker system prune -a -f || true
-#
-#      - name: ecr get-login-password
-#        run: |
-#          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev
-#      - name: Pull Docker image from AWS ECR
-#        run: |
-#          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
-#
-#      - name: Run new Docker container
-#        run: |
-#          docker run --rm -it -d -p 80:8080 --name jumo_back_dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
-#
-#      - name: Clean up unused Docker images after deployment
-#        run: |
-#          sudo docker image prune -a -f || true
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and push Docker image to AWS ECR
+        run: |
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest .
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+
+  deploy:
+    needs: build-docker-image
+    runs-on: [dev]
+    steps:
+      - name: Clean up Docker system before pulling
+        run: |
+          sudo docker stop $(sudo docker ps -aq) || true
+          sudo docker container prune -f || true
+          sudo docker image prune -a -f || true
+          sudo docker volume prune -f || true
+          sudo docker network prune -f || true
+          sudo docker system prune -a -f || true
+
+      - name: ecr get-login-password
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev
+      - name: Pull Docker image from AWS ECR
+        run: |
+          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+
+      - name: Run new Docker container
+        run: |
+          docker run --rm -it -d -p 80:8080 --name jumo_back_dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+
+      - name: Clean up unused Docker images after deployment
+        run: |
+          sudo docker image prune -a -f || true
