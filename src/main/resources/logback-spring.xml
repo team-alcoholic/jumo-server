@@ -16,21 +16,23 @@
         <timestamp key="timestamp" datePattern="yyyy-MM-dd-HH-mm-ssSSS"/>
 
         <property name="CONSOLE_LOG_PATTERN" value="%highlight(%-5level) %date [%thread] %cyan([%C{0} :: %M :: %L]) - %msg%n"/>
-        <property resource="application-dev.properties" />
+        <springProperty name="name" source="cloudwatch.name" />
+        <springProperty name="accesskey" source="cloudwatch.accesskey" />
+        <springProperty name="secretkey" source="cloudwatch.secretkey" />
 
         <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
             <layout>
                 <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
             </layout>
-            <logGroupName>${cloudwatch.name}</logGroupName>
+            <logGroupName>${name}</logGroupName>
             <logStreamUuidPrefix>jumo-server-dev/</logStreamUuidPrefix>
             <logRegion>ap-northeast-2</logRegion>
             <maxBatchLogEvents>50</maxBatchLogEvents>
             <maxFlushTimeMillis>60000</maxFlushTimeMillis>
             <maxBlockTimeMillis>5000</maxBlockTimeMillis>
             <retentionTimeDays>0</retentionTimeDays>
-            <accessKeyId>${cloudwatch.accesskey}</accessKeyId>
-            <secretAccessKey>${cloudwatch.secretkey}</secretAccessKey>
+            <accessKeyId>${accesskey}</accessKeyId>
+            <secretAccessKey>${secretkey}</secretAccessKey>
         </appender>
 
         <root level="INFO">
