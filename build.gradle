@@ -32,6 +32,9 @@ dependencies {
     // AWS Cloud
     implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
 
+    // AWS CloudWatch logback appender
+    implementation "ca.pjer:logback-awslogs-appender:1.6.0"
+
     // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
