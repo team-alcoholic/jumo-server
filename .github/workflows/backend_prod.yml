@@ -90,7 +90,7 @@ jobs:
 
       - name: Run new Docker container
         run: |
-          docker run --rm -it -d -p 80:8080 --name jumo_back_prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
+          docker run --rm -it -d -p 80:8080 --name jumo_back_prod -e SPRING_PROFILES_ACTIVE=prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
 
       - name: Clean up unused Docker images after deployment
         run: |

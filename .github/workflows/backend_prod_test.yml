@@ -1,4 +1,4 @@
-name: JUMO server DEV CI/CD
+name: JUMO server PROD CI/CD
 
 on:
   push:
@@ -40,24 +40,24 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build
         env:
-          SPRING_PROFILES_ACTIVE: dev
+          SPRING_PROFILES_ACTIVE: prod
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and push Docker image to AWS ECR
         run: |
-          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest .
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest .
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
 
-  deploy:
+  deploy-to-az1:
     needs: build-docker-image
-    runs-on: [dev]
+    runs-on: [ prod, 2a ]
     steps:
 
       - name: ecr get-login-password
         run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod
       - name: Pull Docker image from AWS ECR
         run: |
           docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
@@ -67,7 +67,30 @@ jobs:
 
       - name: Run new Docker container
         run: |
-          docker run --rm -it -d -p 80:8080 --name jumo_back_dev -e SPRING_PROFILES_ACTIVE=dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+          docker run --rm -it -d -p 80:8080 --name jumo_back_prod -e SPRING_PROFILES_ACTIVE=prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
+
+      - name: Clean up unused Docker images after deployment
+        run: |
+          sudo docker image prune -a -f || true
+
+  deploy-to-az2:
+    needs: deploy-to-az1
+    runs-on: [ prod, 2c ]
+    steps:
+
+      - name: ecr get-login-password
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod
+      - name: Pull Docker image from AWS ECR
+        run: |
+          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+
+      - name: stop Docker system
+        run: sudo docker stop $(sudo docker ps -aq) || true
+
+      - name: Run new Docker container
+        run: |
+          docker run --rm -it -d -p 80:8080 --name jumo_back_prod -e SPRING_PROFILES_ACTIVE=prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
 
       - name: Clean up unused Docker images after deployment
         run: |
