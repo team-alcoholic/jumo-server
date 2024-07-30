@@ -1,4 +1,4 @@
-name: JUMO server-dev CD
+name: JUMO server DEV CI/CD
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # AWS Secrets Manager, AWS ECR 사용을 위해 AWS 자격 증명을 수행하는 단계
+      # AWS ECR 사용을 위해 AWS 자격 증명을 수행하는 단계
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -36,6 +36,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Gradle 빌드 수행: profile 지정
       - name: Build with Gradle Wrapper
         run: ./gradlew build
         env:
@@ -53,14 +54,6 @@ jobs:
     needs: build-docker-image
     runs-on: [dev]
     steps:
-      - name: Clean up Docker system before pulling
-        run: |
-          sudo docker stop $(sudo docker ps -aq) || true
-          sudo docker container prune -f || true
-          sudo docker image prune -a -f || true
-          sudo docker volume prune -f || true
-          sudo docker network prune -f || true
-          sudo docker system prune -a -f || true
 
       - name: ecr get-login-password
         run: |
@@ -69,9 +62,12 @@ jobs:
         run: |
           docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
 
+      - name: stop Docker system
+        run: sudo docker stop $(sudo docker ps -aq) || true
+
       - name: Run new Docker container
         run: |
-          docker run --rm -it -d -p 80:8080 --name jumo_back_dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+          docker run --rm -it -d -p 80:8080 --name jumo_back_dev -e SPRING_PROFILES_ACTIVE=dev ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
 
       - name: Clean up unused Docker images after deployment
         run: |

@@ -3,7 +3,7 @@
 <configuration timeZone="Asia/Seoul">
 
     <!-- 로컬 환경 콘솔 출력 설정 -->
-    <springProfile name="default,local">
+    <springProfile name="default,local,test,prod">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
