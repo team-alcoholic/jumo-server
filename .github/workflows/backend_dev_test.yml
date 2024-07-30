@@ -3,7 +3,7 @@ name: JUMO server DEV CI/CD
 on:
   push:
     branches:
-      - 'develop'
+      - 'feature/BYOB-134'
 
 jobs:
   build-docker-image:
