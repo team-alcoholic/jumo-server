@@ -32,7 +32,7 @@ jobs:
       - name: Build with Gradle Wrapper
         run: ./gradlew build -i
         env:
-          SPRING_PROFILES_ACTIVE: dev
+          SPRING_PROFILES_ACTIVE: test
 
       # AWS ECR 사용을 위해 AWS 자격 증명을 수행하는 단계
       - name: Configure AWS credentials
