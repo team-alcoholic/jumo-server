@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration timeZone="Asia/Seoul">
-    <!-- 기본 콘솔 출력 설정 -->
+
+    <!-- 로컬 환경 콘솔 출력 설정 -->
     <springProfile name="default,local">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
@@ -19,7 +20,7 @@
 
         <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
             <layout>
-                <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss}] [%level] [%file:%line] - %msg%n</pattern>
+                <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss,Asia/Seoul}] [%level] [%file:%line] - %msg%n</pattern>
             </layout>
             <logGroupName>${name}</logGroupName>
             <logStreamUuidPrefix>jumo-server-dev/</logStreamUuidPrefix>
