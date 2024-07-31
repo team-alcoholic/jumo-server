@@ -3,7 +3,7 @@
 <configuration timeZone="Asia/Seoul">
 
     <!-- 로컬 환경 콘솔 출력 설정 -->
-    <springProfile name="default,local,test,prod">
+    <springProfile name="default,local,test">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
@@ -13,15 +13,14 @@
     </springProfile>
 
     <!--  개발 환경 로깅 설정  -->
-    <springProfile name="dev">
+    <springProfile name="dev,prod">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
         <springProperty name="name" source="cloudwatch.name" />
         <springProperty name="accesskey" source="cloudwatch.accesskey" />
         <springProperty name="secretkey" source="cloudwatch.secretkey" />
 
         <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
-            <layout>
-                <pattern>[%thread] [%date{yyyy-MM-dd HH:mm:ss,Asia/Seoul}] [%level] [%file:%line] - %msg%n</pattern>
-            </layout>
             <logGroupName>${name}</logGroupName>
             <logStreamUuidPrefix>jumo-server-dev/</logStreamUuidPrefix>
             <logRegion>ap-northeast-2</logRegion>
@@ -34,6 +33,7 @@
         </appender>
 
         <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="aws_cloudwatch_log"/>
         </root>
     </springProfile>
