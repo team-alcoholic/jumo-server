@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MeetingListResponseDto {
+public class MeetingListResDto {
     private List<MeetingListDto> meetings;
     private Long lastId;
     private boolean eof;

@@ -3,13 +3,14 @@ package team_alcoholic.jumo_server.domain.meeting.dto;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.domain.meeting.domain.Meeting;
+import team_alcoholic.jumo_server.domain.meeting.domain.MeetingImage;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
-public class MeetingDto {
+public class MeetingResDto {
 
     private Long id;
     private String uuid;
@@ -34,7 +35,8 @@ public class MeetingDto {
     private String externalLink;
     private List<String> images;
 
-    public MeetingDto(Meeting meeting, List<String> images) {
+
+    public MeetingResDto(Meeting meeting) {
         this.id = meeting.getId();
         this.uuid = meeting.getUuid();
         this.host = meeting.getHost();
@@ -42,7 +44,9 @@ public class MeetingDto {
         this.status = meeting.getStatus();
         this.meetingAt = meeting.getMeetingAt();
         this.fixAt = meeting.getFixAt();
-        this.region = meeting.getRegion();
+        if (meeting.getRegion() != null) {
+            this.region = meeting.getRegion().getAdmnm();
+        }
         this.place = meeting.getPlace();
         this.liquors = meeting.getLiquors();
         this.participatesMin = meeting.getParticipatesMin();
@@ -56,6 +60,6 @@ public class MeetingDto {
         this.thumbnail = meeting.getThumbnailImage();
         this.externalService = meeting.getExternalService();
         this.externalLink = meeting.getExternalLink();
-        this.images = images;
+        this.images = meeting.getImages().stream().map(MeetingImage::getUrl).toList();
     }
 }

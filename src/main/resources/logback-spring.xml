@@ -3,7 +3,7 @@
 <configuration timeZone="Asia/Seoul">
 
     <!-- 로컬 환경 콘솔 출력 설정 -->
-    <springProfile name="default,local,test">
+    <springProfile name="default,local,test,local_dev_db">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
@@ -16,9 +16,9 @@
     <springProfile name="dev,prod">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-        <springProperty name="name" source="cloudwatch.name" />
-        <springProperty name="accesskey" source="cloudwatch.accesskey" />
-        <springProperty name="secretkey" source="cloudwatch.secretkey" />
+        <springProperty name="name" source="cloudwatch.name"/>
+        <springProperty name="accesskey" source="cloudwatch.accesskey"/>
+        <springProperty name="secretkey" source="cloudwatch.secretkey"/>
 
         <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
             <logGroupName>${name}</logGroupName>

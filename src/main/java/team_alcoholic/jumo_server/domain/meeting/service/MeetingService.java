@@ -1,14 +1,15 @@
 package team_alcoholic.jumo_server.domain.meeting.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import team_alcoholic.jumo_server.domain.meeting.dto.MeetingDto;
+import org.springframework.transaction.annotation.Transactional;
+import team_alcoholic.jumo_server.domain.meeting.domain.Meeting;
+import team_alcoholic.jumo_server.domain.meeting.dto.MeetingResDto;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListDto;
 import team_alcoholic.jumo_server.domain.meeting.repository.MeetingRepository;
-import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResponseDto;
-import team_alcoholic.jumo_server.domain.region.domain.Region;
-import team_alcoholic.jumo_server.domain.region.repository.RegionRepository;
+import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 
 import java.util.List;
 
@@ -17,21 +18,31 @@ import java.util.List;
 public class MeetingService {
 
     private final MeetingRepository meetingRepository;
-    private final RegionRepository regionRepository;
 
-    public MeetingDto findMeetingById(Long id) {
-        MeetingDto meeting = meetingRepository.findMeetingById(id);
-        Region region = regionRepository.findByAdmcd(meeting.getRegion());
-        meeting.setRegion(region.getAdmnm());
-        return meeting;
+    public MeetingResDto findMeetingById(Long id) {
+        Meeting meeting = meetingRepository.findMeetingById(id);
+        return new MeetingResDto(meeting);
     }
 
-    public MeetingListResponseDto findLatestMeetingList(int limit, Long cursor) {
-        List<MeetingListDto> meetings;
-        if (cursor==0) meetings = meetingRepository.findLatestMeetingList(limit+1);
-        else meetings = meetingRepository.findLatestMeetingListById(limit+1, cursor);
-        boolean eof = (meetings.size()<limit+1);
-        if (!eof) meetings.remove(meetings.size()-1);
-        return new MeetingListResponseDto(meetings, meetings.get(meetings.size()-1).getId(), eof);
+    @Transactional(readOnly = true)
+    public MeetingListResDto findLatestMeetingList(int limit, Long cursor) {
+        List<Meeting> meetings;
+        Pageable pageable = PageRequest.of(0, limit + 1);
+
+        // cursor가 0이면 Long.MAX_VALUE를 사용
+        Long effectiveCursor = (cursor == 0) ? Long.MAX_VALUE : cursor;
+
+        meetings = meetingRepository.findByIdLessThanOrderByIdDesc(effectiveCursor, pageable);
+
+        boolean eof = (meetings.size() < limit + 1);
+        if (!eof) {
+            meetings.remove(meetings.size() - 1);
+        }
+
+        List<MeetingListDto> meetingList = meetings.stream().map(MeetingListDto::new).toList();
+        return new MeetingListResDto(meetingList, meetings.get(meetings.size() - 1).getId(), eof);
     }
+
 }
+
+
