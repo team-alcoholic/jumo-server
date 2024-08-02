@@ -33,7 +33,8 @@ public class MeetingListDto {
 //    private String description;
     private String thumbnail;
     private String externalService;
-//    private String externalLink;
+    //    private String externalLink;
+    private LocalDateTime createdAt;
 
     public MeetingListDto(Meeting meeting) {
         this.id = meeting.getId();
@@ -45,7 +46,6 @@ public class MeetingListDto {
         if (meeting.getRegion() != null) {
             this.region = meeting.getRegion().getAdmnm();
         }
-
         this.liquors = meeting.getLiquors();
         this.participatesMin = meeting.getParticipatesMin();
         this.participatesMax = meeting.getParticipatesMax();
@@ -53,6 +53,7 @@ public class MeetingListDto {
         this.byob = meeting.isByob();
         this.thumbnail = meeting.getThumbnailImage();
         this.externalService = meeting.getExternalService();
+        this.createdAt = meeting.getCreatedAt();
     }
 
 

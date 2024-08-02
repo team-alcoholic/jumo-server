@@ -34,6 +34,7 @@ public class MeetingResDto {
     private String externalService;
     private String externalLink;
     private List<String> images;
+    private LocalDateTime createdAt;
 
 
     public MeetingResDto(Meeting meeting) {
@@ -61,5 +62,6 @@ public class MeetingResDto {
         this.externalService = meeting.getExternalService();
         this.externalLink = meeting.getExternalLink();
         this.images = meeting.getImages().stream().map(MeetingImage::getUrl).toList();
+        this.createdAt = meeting.getCreatedAt();
     }
 }

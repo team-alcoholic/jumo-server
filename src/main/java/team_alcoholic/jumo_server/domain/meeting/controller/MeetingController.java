@@ -1,10 +1,13 @@
 package team_alcoholic.jumo_server.domain.meeting.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingResDto;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 import team_alcoholic.jumo_server.domain.meeting.service.MeetingService;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("meetings")
@@ -20,13 +23,12 @@ public class MeetingController implements MeetingApi {
 
     @GetMapping()
     public MeetingListResDto getLatestMeetingList(
-        @RequestParam(required = false, defaultValue = "latest") String sort,
-        @RequestParam(required = false, defaultValue = "30") int limit,
-        @RequestParam(required = false, defaultValue = "0") Long cursor
-    ) {
-        switch (sort) {
-            default:
-                return meetingService.findLatestMeetingList(limit, cursor);
-        }
+            @RequestParam(required = false, defaultValue = "meeting-at") String sort,
+            @RequestParam(required = false, defaultValue = "30") int limit,
+            @RequestParam(name = "cursor-id", required = false, defaultValue = "0") Long cursorId,
+            @RequestParam(name = "cursor-date", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime cursorDate) {
+
+        return meetingService.findLatestMeetingList(limit, cursorId, sort, cursorDate);
     }
 }
