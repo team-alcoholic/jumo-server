@@ -12,11 +12,17 @@ import team_alcoholic.jumo_server.domain.meeting.exception.MeetingNotFoundExcept
 import team_alcoholic.jumo_server.domain.meeting.repository.MeetingRepository;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MeetingService {
+
+    private static final Long DEFAULT_CURSOR_ID = Long.MAX_VALUE;
+    private static final LocalDateTime DEFAULT_CURSOR_DATE = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+
 
     private final MeetingRepository meetingRepository;
 
@@ -29,22 +35,26 @@ public class MeetingService {
     }
 
     @Transactional(readOnly = true)
-    public MeetingListResDto findLatestMeetingList(int limit, Long cursor) {
-        List<Meeting> meetings;
+    public MeetingListResDto findLatestMeetingList(int limit, Long cursorId, String sort, LocalDateTime cursorDate) {
+
         Pageable pageable = PageRequest.of(0, limit + 1);
 
-        // cursor가 0이면 Long.MAX_VALUE를 사용
-        Long effectiveCursor = (cursor == 0) ? Long.MAX_VALUE : cursor;
+        // cursorId와 cursorDate가 없는 경우, max값으로 초기화
+        Long id = (cursorId == 0) ? DEFAULT_CURSOR_ID : cursorId;
+        LocalDateTime date = (cursorDate == null) ? DEFAULT_CURSOR_DATE : cursorDate;
 
-        meetings = meetingRepository.findByIdLessThanOrderByIdDesc(effectiveCursor, pageable);
-
+        List<Meeting> meetings = sort.equals("meeting-at") ?
+                meetingRepository.findMeetingsByMeetingAtAndIdCursor(date, id, pageable) :
+                meetingRepository.findMeetingsByCreatedAtAndIdCursor(date, id, pageable);
         boolean eof = (meetings.size() < limit + 1);
+
         if (!eof) {
             meetings.remove(meetings.size() - 1);
         }
 
         List<MeetingListDto> meetingList = meetings.stream().map(MeetingListDto::new).toList();
-        return new MeetingListResDto(meetingList, meetings.get(meetings.size() - 1).getId(), eof);
+        LocalDateTime newCursorDate = sort.equals("meeting-at") ? meetings.get(meetings.size() - 1).getMeetingAt() : meetings.get(meetings.size() - 1).getCreatedAt();
+        return new MeetingListResDto(meetingList, meetings.get(meetings.size() - 1).getId(), eof, newCursorDate);
     }
 
 }
