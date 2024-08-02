@@ -31,6 +31,15 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
             Pageable pageable
     );
 
+    // meetingAt 기준으로 오래된 Meeting 목록 조회, 같은 meetingAt 경우 id로 정렬
+    @EntityGraph(attributePaths = "region")
+    @Query("SELECT m FROM Meeting m WHERE (m.meetingAt > :meetingAt OR (m.meetingAt = :meetingAt AND m.id > :id)) ORDER BY m.meetingAt ASC, m.id ASC")
+    List<Meeting> findMeetingsByMeetingAtAndIdCursorAsc(
+            @Param("meetingAt") LocalDateTime meetingAt,
+            @Param("id") Long id,
+            Pageable pageable
+    );
+
     // createdAt 기준으로 최신 Meeting 목록 조회, 같은 createdAt 경우 id로 정렬
     @EntityGraph(attributePaths = "region")
     @Query("SELECT m FROM Meeting m WHERE (m.createdAt < :createdAt OR (m.createdAt = :createdAt AND m.id < :id)) ORDER BY m.createdAt DESC, m.id DESC")

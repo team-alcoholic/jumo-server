@@ -23,7 +23,7 @@ public class MeetingController implements MeetingApi {
 
     @GetMapping()
     public MeetingListResDto getLatestMeetingList(
-            @RequestParam(required = false, defaultValue = "meeting-at") String sort,
+            @RequestParam(required = false, defaultValue = "created-at") String sort,
             @RequestParam(required = false, defaultValue = "30") int limit,
             @RequestParam(name = "cursor-id", required = false, defaultValue = "0") Long cursorId,
             @RequestParam(name = "cursor-date", required = false)
