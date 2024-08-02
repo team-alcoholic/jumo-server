@@ -12,17 +12,22 @@
         </root>
     </springProfile>
 
-    <!--  개발 환경 로깅 설정  -->
+    <!--  개발/운영 환경 로깅 설정  -->
     <springProfile name="dev,prod">
-        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="./logback-config.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
         <springProperty name="name" source="cloudwatch.name"/>
         <springProperty name="accesskey" source="cloudwatch.accesskey"/>
         <springProperty name="secretkey" source="cloudwatch.secretkey"/>
 
         <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>${CONSOLE_LOG_CHARSET}</charset>
+            </encoder>
             <logGroupName>${name}</logGroupName>
-            <logStreamUuidPrefix>jumo-server-dev/</logStreamUuidPrefix>
+            <logStreamUuidPrefix>jumo-server/</logStreamUuidPrefix>
             <logRegion>ap-northeast-2</logRegion>
             <maxBatchLogEvents>50</maxBatchLogEvents>
             <maxFlushTimeMillis>60000</maxFlushTimeMillis>
