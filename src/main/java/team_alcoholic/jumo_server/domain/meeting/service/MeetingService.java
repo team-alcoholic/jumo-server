@@ -12,11 +12,17 @@ import team_alcoholic.jumo_server.domain.meeting.exception.MeetingNotFoundExcept
 import team_alcoholic.jumo_server.domain.meeting.repository.MeetingRepository;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class MeetingService {
+
+    private static final Long DEFAULT_CURSOR_ID = Long.MAX_VALUE;
+    private static final LocalDateTime DEFAULT_MAX_DATE = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
+
 
     private final MeetingRepository meetingRepository;
 
@@ -29,22 +35,58 @@ public class MeetingService {
     }
 
     @Transactional(readOnly = true)
-    public MeetingListResDto findLatestMeetingList(int limit, Long cursor) {
-        List<Meeting> meetings;
+    public MeetingListResDto findLatestMeetingList(int limit, Long cursorId, String sort, LocalDateTime cursorDate) {
+
         Pageable pageable = PageRequest.of(0, limit + 1);
 
-        // cursor가 0이면 Long.MAX_VALUE를 사용
-        Long effectiveCursor = (cursor == 0) ? Long.MAX_VALUE : cursor;
+        // cursorId와 cursorDate가 없는 경우, max값으로 초기화
+        Long id = (cursorId == null || cursorId == 0) ? DEFAULT_CURSOR_ID : cursorId;
+        LocalDateTime date = (cursorDate == null) ? DEFAULT_MAX_DATE : cursorDate;
 
-        meetings = meetingRepository.findByIdLessThanOrderByIdDesc(effectiveCursor, pageable);
+        List<Meeting> meetings;
+        boolean eof;
 
-        boolean eof = (meetings.size() < limit + 1);
+        meetings = switch (sort) {
+            case "created-at" -> meetingRepository.findMeetingsByCreatedAtAndIdCursor(date, id, pageable);
+            case "meeting-at" -> meetingRepository.findMeetingsByMeetingAtAndIdCursor(date, id, pageable);
+            case "meeting-at-asc" -> {
+                // ascending order의 경우 어제 날짜를 동적으로 계산
+                date = (cursorDate == null) ? getYesterday() : cursorDate;
+                yield meetingRepository.findMeetingsByMeetingAtAndIdCursorAsc(date, id, pageable);
+
+            }
+            default -> throw new IllegalArgumentException("Invalid sort parameter: " + sort);
+        };
+
+        eof = (meetings.size() < limit + 1);
+
         if (!eof) {
             meetings.remove(meetings.size() - 1);
         }
 
-        List<MeetingListDto> meetingList = meetings.stream().map(MeetingListDto::new).toList();
-        return new MeetingListResDto(meetingList, meetings.get(meetings.size() - 1).getId(), eof);
+        List<MeetingListDto> meetingList = meetings.stream()
+                .map(MeetingListDto::new)
+                .toList();
+        LocalDateTime newCursorDate = getCursorDate(meetings, sort);
+
+        return new MeetingListResDto(meetingList, meetings.get(meetings.size() - 1).getId(), eof, newCursorDate);
+    }
+
+    private LocalDateTime getCursorDate(List<Meeting> meetings, String sort) {
+        if (meetings.isEmpty()) {
+            return null;
+        }
+        Meeting lastMeeting = meetings.get(meetings.size() - 1);
+        return switch (sort) {
+            case "created-at" -> lastMeeting.getCreatedAt();
+            case "meeting-at", "meeting-at-asc" -> lastMeeting.getMeetingAt();
+            default -> null;
+        };
+    }
+
+    private LocalDateTime getYesterday() {
+        return LocalDateTime.now().minusDays(1);
+
     }
 
 }
