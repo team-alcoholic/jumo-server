@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import team_alcoholic.jumo_server.domain.meeting.domain.Meeting;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingResDto;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListDto;
+import team_alcoholic.jumo_server.domain.meeting.exception.MeetingNotFoundException;
 import team_alcoholic.jumo_server.domain.meeting.repository.MeetingRepository;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 
@@ -21,6 +22,9 @@ public class MeetingService {
 
     public MeetingResDto findMeetingById(Long id) {
         Meeting meeting = meetingRepository.findMeetingById(id);
+        if (meeting == null) {
+            throw new MeetingNotFoundException(id);
+        }
         return new MeetingResDto(meeting);
     }
 
