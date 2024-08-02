@@ -59,6 +59,7 @@ public class MeetingService {
         };
 
         eof = (meetings.size() < limit + 1);
+
         if (!eof) {
             meetings.remove(meetings.size() - 1);
         }
@@ -85,6 +86,7 @@ public class MeetingService {
 
     private LocalDateTime getYesterday() {
         return LocalDateTime.now().minusDays(1);
+
     }
 
 }

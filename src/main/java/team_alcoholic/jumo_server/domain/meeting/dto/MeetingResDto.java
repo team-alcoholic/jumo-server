@@ -36,7 +36,6 @@ public class MeetingResDto {
     private List<String> images;
     private LocalDateTime createdAt;
 
-
     public MeetingResDto(Meeting meeting) {
         this.id = meeting.getId();
         this.uuid = meeting.getUuid();
@@ -63,5 +62,6 @@ public class MeetingResDto {
         this.externalLink = meeting.getExternalLink();
         this.images = meeting.getImages().stream().map(MeetingImage::getUrl).toList();
         this.createdAt = meeting.getCreatedAt();
+
     }
 }
