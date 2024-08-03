@@ -12,7 +12,7 @@ import java.util.List;
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     // 특정 ID의 Meeting 조회
-    @EntityGraph(attributePaths = "images")
+    @EntityGraph(attributePaths = {"images", "region"})
     Meeting findMeetingById(Long id);
 
     // 특정 ID보다 작은 Meeting 목록 조회
