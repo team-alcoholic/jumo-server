@@ -54,7 +54,7 @@ jobs:
     needs: build-docker-image
     runs-on: [ prod, 2a ]
     steps:
-
+    
       - name: ecr get-login-password
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod

@@ -46,5 +46,4 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
             @Param("id") Long id,
             Pageable pageable
     );
-
 }

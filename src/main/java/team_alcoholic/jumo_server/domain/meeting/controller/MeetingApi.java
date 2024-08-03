@@ -9,7 +9,6 @@ import team_alcoholic.jumo_server.domain.meeting.dto.MeetingResDto;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 import java.time.LocalDateTime;
 
-
 @Tag(name = "모임 API", description = "모임에 대한 CRUD를 수행하는 API입니다.")
 public interface MeetingApi {
 
@@ -28,6 +27,4 @@ public interface MeetingApi {
             content = @Content(schema = @Schema(implementation = MeetingListResDto.class))
     )
     public MeetingListResDto getLatestMeetingList(String sort, int limit, Long cursorId, LocalDateTime cursorDate);
-
 }
-

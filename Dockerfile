@@ -16,5 +16,4 @@ COPY ${JAR_FILE} app.jar
 ENV SPRING_PROFILES_ACTIVE $SPRING_PROFILES_ACTIVE
 
 # 실행 명령어
-#ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=dev", "app.jar"]
 ENTRYPOINT ["java", "-jar", "app.jar"]

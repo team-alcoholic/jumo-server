@@ -14,6 +14,7 @@ import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+
 import java.util.List;
 
 @Service
@@ -90,5 +91,3 @@ public class MeetingService {
     }
 
 }
-
-

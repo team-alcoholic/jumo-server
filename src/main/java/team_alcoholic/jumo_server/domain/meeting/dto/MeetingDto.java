@@ -1,58 +1,61 @@
 package team_alcoholic.jumo_server.domain.meeting.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.domain.meeting.domain.Meeting;
-import team_alcoholic.jumo_server.domain.region.domain.Region;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class MeetingListDto {
+public class MeetingDto {
 
     private Long id;
     private String uuid;
-    //    private String host;
+    private String host;
     private String name;
     private String status;
     private LocalDateTime meetingAt;
     private LocalDateTime fixAt;
     private String region;
-    //    private String place;
+    private String place;
     private String liquors;
     private Integer participatesMin;
     private Integer participatesMax;
     private Integer payment;
-    //    private String paymentMethod;
+    private String paymentMethod;
     private boolean byob;
-    //    private Integer byobMin;
-//    private Integer byobMax;
-//    private String description;
+    private Integer byobMin;
+    private Integer byobMax;
+    private String description;
     private String thumbnail;
     private String externalService;
-    //    private String externalLink;
-    private LocalDateTime createdAt;
+    private String externalLink;
+    private List<String> images;
 
-    public MeetingListDto(Meeting meeting) {
+    public MeetingDto(Meeting meeting, List<String> images) {
         this.id = meeting.getId();
         this.uuid = meeting.getUuid();
+        this.host = meeting.getHost();
         this.name = meeting.getName();
         this.status = meeting.getStatus();
         this.meetingAt = meeting.getMeetingAt();
         this.fixAt = meeting.getFixAt();
-        if (meeting.getRegion() != null) {
-            this.region = meeting.getRegion().getAdmnm();
-        }
+        this.region = meeting.getRegion();
+        this.place = meeting.getPlace();
         this.liquors = meeting.getLiquors();
         this.participatesMin = meeting.getParticipatesMin();
         this.participatesMax = meeting.getParticipatesMax();
         this.payment = meeting.getPayment();
+        this.paymentMethod = meeting.getPaymentMethod();
         this.byob = meeting.isByob();
+        this.byobMin = meeting.getByobMin();
+        this.byobMax = meeting.getByobMax();
+        this.description = meeting.getDescription();
         this.thumbnail = meeting.getThumbnailImage();
         this.externalService = meeting.getExternalService();
-        this.createdAt = meeting.getCreatedAt();
+        this.externalLink = meeting.getExternalLink();
+        this.images = images;
     }
 }
