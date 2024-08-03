@@ -29,6 +29,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // AWS Cloud
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
+
+    // AWS CloudWatch logback appender
+    implementation "ca.pjer:logback-awslogs-appender:1.6.0"
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -46,10 +51,9 @@ dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 //    implementation 'org.springframework.session:spring-session-data-redis'
 
-
     //jackson
-//    implementation 'com.fasterxml.jackson.core:jackson-databind'
-//    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -2,16 +2,18 @@ package team_alcoholic.jumo_server.domain.meeting.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import team_alcoholic.jumo_server.domain.region.domain.Region;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
 public class Meeting extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String uuid;
@@ -20,7 +22,11 @@ public class Meeting extends BaseTimeEntity {
     private String status;
     private LocalDateTime meetingAt;
     private LocalDateTime fixAt;
-    private String region;
+
+    @ManyToOne
+    @JoinColumn(name = "region", referencedColumnName = "admcd")
+    private Region region;
+
     private String place;
     private String liquors;
     private Integer participatesMin;
@@ -34,4 +40,7 @@ public class Meeting extends BaseTimeEntity {
     private String thumbnailImage;
     private String externalService;
     private String externalLink;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<MeetingImage> images;
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration timeZone="Asia/Seoul">
+
+    <!-- 로컬 환경 콘솔 출력 설정 -->
+    <springProfile name="default,local,test,local_dev_db">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!--  개발/운영 환경 로깅 설정  -->
+    <springProfile name="dev,prod">
+        <include resource="./logback-config.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+        <springProperty name="name" source="cloudwatch.name"/>
+        <springProperty name="accesskey" source="cloudwatch.accesskey"/>
+        <springProperty name="secretkey" source="cloudwatch.secretkey"/>
+
+        <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>${CONSOLE_LOG_CHARSET}</charset>
+            </encoder>
+            <logGroupName>${name}</logGroupName>
+            <logStreamUuidPrefix>jumo-server/</logStreamUuidPrefix>
+            <logRegion>ap-northeast-2</logRegion>
+            <maxBatchLogEvents>50</maxBatchLogEvents>
+            <maxFlushTimeMillis>60000</maxFlushTimeMillis>
+            <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+            <retentionTimeDays>0</retentionTimeDays>
+            <accessKeyId>${accesskey}</accessKeyId>
+            <secretAccessKey>${secretkey}</secretAccessKey>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="aws_cloudwatch_log"/>
+        </root>
+    </springProfile>
+</configuration>

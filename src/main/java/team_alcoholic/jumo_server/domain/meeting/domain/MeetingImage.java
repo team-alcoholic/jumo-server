@@ -1,9 +1,6 @@
 package team_alcoholic.jumo_server.domain.meeting.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
 
@@ -14,6 +11,8 @@ public class MeetingImage extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long meeting;
+    @ManyToOne
+    @JoinColumn(name = "meeting", nullable = false)
+    private Meeting meeting;
     private String url;
 }

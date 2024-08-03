@@ -1,4 +1,4 @@
-name: Build and Deploy Spring Docker Image
+name: JUMO server PROD CI/CD
 
 on:
   push:
@@ -15,11 +15,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # JDK 설치
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      # AWS ECR 사용을 위해 AWS 자격 증명을 수행하는 단계
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
@@ -27,21 +36,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Set application properties from GitHub Secrets
-        run: |
-          echo '${{ secrets.APP_CONFIG_JSON_PROD }}' > config.json
-          mkdir -p src/main/resources
-          jq -r 'to_entries|map("\(.key)=\(.value|tostring)")|.[]' config.json > src/main/resources/application.properties
-
+      # Gradle 빌드 수행: profile 지정
       - name: Build with Gradle Wrapper
         run: ./gradlew build
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+        env:
+          SPRING_PROFILES_ACTIVE: prod
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
@@ -51,25 +50,47 @@ jobs:
           docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest .
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
 
-  deploy:
+  deploy-to-az1:
     needs: build-docker-image
-    runs-on: [prod]
+    runs-on: [ prod, 2a ]
     steps:
-      
+    
       - name: ecr get-login-password
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod
       - name: Pull Docker image from AWS ECR
         run: |
           docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
-      
-      - name: stop Docker system 
-        run: |
-          sudo docker stop $(sudo docker ps -aq) || true
+
+      - name: stop Docker system
+        run: sudo docker stop $(sudo docker ps -aq) || true
 
       - name: Run new Docker container
         run: |
-          docker run --rm -it -d -p 80:8080 --name jumo_back_prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
+          docker run --rm -it -d -p 80:8080 --name jumo_back_prod -e SPRING_PROFILES_ACTIVE=prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
+
+      - name: Clean up unused Docker images after deployment
+        run: |
+          sudo docker image prune -a -f || true
+
+  deploy-to-az2:
+    needs: deploy-to-az1
+    runs-on: [ prod, 2c ]
+    steps:
+
+      - name: ecr get-login-password
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod
+      - name: Pull Docker image from AWS ECR
+        run: |
+          docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_dev:latest
+
+      - name: stop Docker system
+        run: sudo docker stop $(sudo docker ps -aq) || true
+
+      - name: Run new Docker container
+        run: |
+          docker run --rm -it -d -p 80:8080 --name jumo_back_prod -e SPRING_PROFILES_ACTIVE=prod ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/jumo_back_prod:latest
 
       - name: Clean up unused Docker images after deployment
         run: |
