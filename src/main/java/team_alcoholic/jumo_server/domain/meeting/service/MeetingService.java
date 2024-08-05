@@ -13,7 +13,6 @@ import team_alcoholic.jumo_server.domain.meeting.repository.MeetingRepository;
 import team_alcoholic.jumo_server.domain.meeting.dto.MeetingListResDto;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 import java.util.List;
 
@@ -36,7 +35,15 @@ public class MeetingService {
     }
 
     @Transactional(readOnly = true)
-    public MeetingListResDto findLatestMeetingList(int limit, Long cursorId, String sort, LocalDateTime cursorDate) {
+    public MeetingListResDto findLatestMeetingList(
+            int limit,
+            Long cursorId,
+            String sort,
+            LocalDateTime cursorDate,
+            List<String> liquors) {
+
+        // Liquor names conversion
+        List<String> convertedLiquors = convertLiquorNames(liquors);
 
         Pageable pageable = PageRequest.of(0, limit + 1);
 
@@ -48,21 +55,34 @@ public class MeetingService {
         boolean eof;
 
         meetings = switch (sort) {
-            case "created-at" -> meetingRepository.findMeetingsByCreatedAtAndIdCursor(date, id, pageable);
-            case "meeting-at" -> meetingRepository.findMeetingsByMeetingAtAndIdCursor(date, id, pageable);
+            case "created-at" ->
+                    meetingRepository.findMeetingsByCreatedAtAndIdCursor(convertedLiquors, date, id, pageable);
+            case "meeting-at" ->
+                    meetingRepository.findMeetingsByMeetingAtAndIdCursor(convertedLiquors, date, id, pageable);
             case "meeting-at-asc" -> {
                 // ascending order의 경우 어제 날짜를 동적으로 계산
                 date = (cursorDate == null) ? getYesterday() : cursorDate;
-                yield meetingRepository.findMeetingsByMeetingAtAndIdCursorAsc(date, id, pageable);
-
+                yield meetingRepository.findMeetingsByMeetingAtAndIdCursorAsc(convertedLiquors, date, id, pageable);
             }
             default -> throw new IllegalArgumentException("Invalid sort parameter: " + sort);
         };
 
         eof = (meetings.size() < limit + 1);
 
+        System.out.println("미팅 크기와 eof() : " + meetings.size() + eof);
+        // liquors에 들어있는 항목
+        System.out.println("liquors : " + liquors);
+        for (String liquor : liquors) {
+            System.out.println("liquor : " + liquor);
+        }
+
         if (!eof) {
             meetings.remove(meetings.size() - 1);
+        }
+
+        // 비어있는 경우 처리
+        if (meetings.isEmpty()) {
+            return new MeetingListResDto(List.of(), id, true, date);
         }
 
         List<MeetingListDto> meetingList = meetings.stream()
@@ -88,6 +108,18 @@ public class MeetingService {
     private LocalDateTime getYesterday() {
         return LocalDateTime.now().minusDays(1);
 
+    }
+
+    private List<String> convertLiquorNames(List<String> liquors) {
+        return liquors.stream()
+                .map(liquor -> {
+                    return switch (liquor.toLowerCase()) {
+                        case "whisky" -> "위스키";
+                        case "wine" -> "와인";
+                        default -> liquor; // 변환이 필요 없는 경우 그대로 반환
+                    };
+                })
+                .toList();
     }
 
 }
