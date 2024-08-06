@@ -29,7 +29,7 @@ public class MeetingController implements MeetingApi {
             @RequestParam(name = "cursor-id", required = false, defaultValue = "0") Long cursorId,
             @RequestParam(name = "cursor-date", required = false)
             @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime cursorDate,
-            @RequestParam(name = "liquors", required = false, defaultValue = "whiskey,wine") String[] liquors) {
+            @RequestParam(name = "liquors", required = false, defaultValue = "whisky,wine") String[] liquors) {
 
         return meetingService.findLatestMeetingList(limit, cursorId, sort, cursorDate, List.of(liquors));
     }

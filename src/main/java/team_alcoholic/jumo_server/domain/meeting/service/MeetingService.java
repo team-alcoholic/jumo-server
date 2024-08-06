@@ -69,7 +69,6 @@ public class MeetingService {
 
         eof = (meetings.size() < limit + 1);
 
-        System.out.println(convertedLiquors);
         System.out.println("미팅 크기와 eof() : " + meetings.size() + eof);
         // liquors에 들어있는 항목
         System.out.println("liquors : " + liquors);
