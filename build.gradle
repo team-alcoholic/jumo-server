@@ -31,9 +31,14 @@ dependencies {
 
     // AWS Cloud
     implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
-
     // AWS CloudWatch logback appender
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
+    // AWS OpenSearch Service
+    implementation 'org.opensearch.client:opensearch-rest-client:2.11.0'
+    implementation 'org.opensearch.client:opensearch-java:2.6.0'
+
+    // JSON
+    implementation 'jakarta.json:jakarta.json-api'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
