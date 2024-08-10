@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team_alcoholic.jumo_server.domain.auth.dto.OAuth2Response;
+import team_alcoholic.jumo_server.domain.user.exception.UserNotFoundException;
 import team_alcoholic.jumo_server.domain.user.repository.UserRepository;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.domain.user.dto.UserDTO;
@@ -27,6 +28,10 @@ public class UserService {
             user = createUser(oAuth2Response);
         }
         return convertToUserDTO(user);
+    }
+
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
     /**
@@ -57,5 +62,7 @@ public class UserService {
                 .profileThumbnailImage(user.getProfileThumbnailImage())
                 .build();
     }
+
+
 
 }

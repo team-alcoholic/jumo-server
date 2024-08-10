@@ -3,6 +3,7 @@ package team_alcoholic.jumo_server.domain.tastingnote.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
+import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.global.common.domain.BaseEntity;
 
 @Entity
@@ -34,5 +35,8 @@ public class TastingNote extends BaseEntity {
     private String noseNotes;
     private String palateNotes;
     private String finishNotes;
+
+    @ManyToOne
+    private User user;
 
 }

@@ -7,6 +7,7 @@ import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteReqDTO;
+import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteSimilarResDto;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteSimilarityVectorsRepository;
@@ -37,18 +38,19 @@ public class TastingNoteService {
     }
 
 
-    public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO) {
+    public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO, User user) {
 
         Liquor liquor = liquorRepository.findById(tastingNoteReqDTO.getLiquorId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid liquor ID"));
+                .orElseThrow(() -> new IllegalArgumentException("비상 liquor ID"));
 
-        TastingNote newTastingNote = convertToEntity(tastingNoteReqDTO, liquor);
+        TastingNote newTastingNote = convertToEntity(tastingNoteReqDTO, liquor, user);
 
         return tastingNoteRepository.save(newTastingNote).getId();
     }
 
-    private TastingNote convertToEntity(TastingNoteReqDTO dto, Liquor liquor) {
+    private TastingNote convertToEntity(TastingNoteReqDTO dto, Liquor liquor, User user) {
         return TastingNote.builder()
+                .user(user)
                 .liquor(liquor)
                 .noseScore(dto.getNoseScore())
                 .palateScore(dto.getPalateScore())
@@ -62,5 +64,14 @@ public class TastingNoteService {
                 .palateNotes(dto.getPalateNotes())
                 .finishNotes(dto.getFinishNotes())
                 .build();
+    }
+
+    public TastingNoteResDTO getTastingNoteById(Long id) {
+        TastingNote tastingNote = tastingNoteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid tasting note ID"));
+
+        System.out.println(tastingNote.getId());
+
+        return TastingNoteResDTO.fromEntity(tastingNote);
     }
 }
