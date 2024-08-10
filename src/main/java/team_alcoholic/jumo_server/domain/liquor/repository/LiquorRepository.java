@@ -10,5 +10,4 @@ import java.util.List;
 
 public interface LiquorRepository extends JpaRepository<Liquor, Long> {
 
-    Liquor findLiquorById(Long id);
 }

@@ -14,10 +14,9 @@ public class LiquorService {
     private final LiquorRepository liquorRepository;
 
     public LiquorResDto findLiquorById(Long id) {
-        Liquor liquor = liquorRepository.findLiquorById(id);
-        if (liquor == null) {
-            throw new LiquorNotFoundException(id);
-        }
+        Liquor liquor = liquorRepository.findById(id).orElseThrow(
+                () -> new LiquorNotFoundException(id)
+        );
         return LiquorResDto.fromEntity(liquor);
     }
 }
