@@ -20,6 +20,9 @@ public class UserService {
 
     public UserDTO getUser(OAuth2Response oAuth2Response) {
         User user = userRepository.findByProviderAndProviderId(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
+        System.out.println("user: " + user);
+
+
         if (user == null) {
             user = createUser(oAuth2Response);
         }
@@ -46,6 +49,7 @@ public class UserService {
 
     private UserDTO convertToUserDTO(User user) {
         return UserDTO.builder()
+                .id(user.getId())
                 .provider(user.getProvider())
                 .providerId(user.getProviderId())
                 .profileNickname(user.getProfileNickname())

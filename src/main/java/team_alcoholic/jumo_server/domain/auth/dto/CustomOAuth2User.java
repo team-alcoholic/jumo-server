@@ -27,6 +27,7 @@ public class CustomOAuth2User implements OAuth2User {
         attributes.put("profileNickname", userDTO.getProfileNickname());
         attributes.put("profileImage", userDTO.getProfileImage());
         attributes.put("profileThumbnailImage", userDTO.getProfileThumbnailImage());
+        attributes.put("id", userDTO.getId());
         return attributes;
     }
 
