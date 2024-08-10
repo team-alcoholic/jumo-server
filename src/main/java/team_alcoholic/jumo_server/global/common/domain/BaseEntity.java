@@ -11,8 +11,8 @@ import org.springframework.data.annotation.LastModifiedBy;
 public class BaseEntity extends BaseTimeEntity {
     @CreatedBy
     @Column(updatable = false)
-    private String createdBy;
+    private String createdBy = "spring_server";  // 기본값 설정
 
     @LastModifiedBy
-    private String updatedBy;
+    private String updatedBy = "spring_server";  // 기본값 설정
 }
