@@ -70,7 +70,6 @@ public class TastingNoteService {
         TastingNote tastingNote = tastingNoteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid tasting note ID"));
 
-        System.out.println(tastingNote.getId());
 
         return TastingNoteResDTO.fromEntity(tastingNote);
     }
