@@ -3,6 +3,7 @@ package team_alcoholic.jumo_server.domain.tastingnote.controller;
 import com.amazonaws.services.secretsmanager.model.ResourceNotFoundException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class TastingNoteController {
     }
 
     @PostMapping("/tasting-notes")
-    public ResponseEntity<Long> saveTastingNote(@RequestBody TastingNoteReqDTO tastingNoteReqDTO,
+    public ResponseEntity<Long> saveTastingNote(@RequestBody @Valid TastingNoteReqDTO tastingNoteReqDTO,
                                                 @AuthenticationPrincipal OAuth2User oAuth2User) {
 
 //        long userId = Long.parseLong(hello.get("id").toString());

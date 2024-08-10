@@ -25,18 +25,27 @@ public class TastingNote extends BaseEntity {
     private Integer palateScore;
     private Integer finishScore;
 
+    @Column(length = 1500) // 필드의 최대 길이 1500자로 설정
     private String noseMemo;
+
+    @Column(length = 1500) // 필드의 최대 길이 1500자로 설정
     private String palateMemo;
+
+    @Column(length = 1500) // 필드의 최대 길이 1500자로 설정
     private String finishMemo;
 
+    @Column(length = 1500) // 필드의 최대 길이 1500자로 설정
     private String overallNote;
+
     private String mood;
 
     private String noseNotes;
+
     private String palateNotes;
+
     private String finishNotes;
 
     @ManyToOne
     private User user;
-
 }
+
