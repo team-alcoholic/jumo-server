@@ -1,5 +1,6 @@
 package team_alcoholic.jumo_server.global.config;
 
+import com.amazonaws.HttpMethod;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,6 +55,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**", "/", "/oauth2/**", "/login/**", "/logout", "/region/**", "/meeting/**").permitAll()
                         .anyRequest().authenticated()
+//                        .requestMatchers(String.valueOf(HttpMethod.POST), "/tasting-notes").authenticated()
+//                        .anyRequest().permitAll()
                 );
 
         return http.build();
