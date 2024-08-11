@@ -5,7 +5,7 @@ import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.springframework.stereotype.Service;
-import team_alcoholic.jumo_server.domain.liquorsearch.domain.Liquor;
+import team_alcoholic.jumo_server.domain.liquorsearch.domain.LiquorES;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,18 +21,18 @@ public class LiquorSearchService {
         this.openSearchClient = openSearchClient;
     }
 
-    public List<Liquor> search(String keyword) {
-        List<Liquor> resultList = new ArrayList<>();
+    public List<LiquorES> search(String keyword) {
+        List<LiquorES> resultList = new ArrayList<>();
 
         SearchRequest request = new SearchRequest.Builder()
             .index(indexName)
             .query(q -> q.queryString(qs -> qs.fields("ko_name").query(keyword)))
             .build();
 
-        SearchResponse<Liquor> response = null;
+        SearchResponse<LiquorES> response = null;
         try {
-            response = openSearchClient.search(request, Liquor.class);
-            for (Hit<Liquor> hit : response.hits().hits()) {
+            response = openSearchClient.search(request, LiquorES.class);
+            for (Hit<LiquorES> hit : response.hits().hits()) {
                 resultList.add(hit.source());
             }
             return resultList;
