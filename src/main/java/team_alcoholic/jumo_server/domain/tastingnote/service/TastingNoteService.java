@@ -40,6 +40,8 @@ public class TastingNoteService {
 
     public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO, User user) {
 
+
+
         Liquor liquor = liquorRepository.findById(tastingNoteReqDTO.getLiquorId())
                 .orElseThrow(() -> new IllegalArgumentException("비상 liquor ID"));
 
