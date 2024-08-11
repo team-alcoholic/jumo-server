@@ -6,6 +6,7 @@ import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 public record LiquorResDto(
         String thumbnailImageUrl,
         String koName,
+        String enName,
         String type,
         String abv,
         String volume,
@@ -28,6 +29,7 @@ public record LiquorResDto(
         return LiquorResDto.builder()
                 .thumbnailImageUrl(liquor.getThumbnailImageUrl())
                 .koName(liquor.getKoName())
+                .enName(liquor.getEnName())
                 .type(liquor.getType())
                 .abv(liquor.getAbv())
                 .volume(liquor.getVolume())
