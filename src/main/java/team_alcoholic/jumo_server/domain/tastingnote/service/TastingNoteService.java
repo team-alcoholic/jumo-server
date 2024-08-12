@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.liquor.exception.LiquorNotFoundException;
 import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
+import team_alcoholic.jumo_server.domain.tastingnote.domain.AiTastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.*;
+import team_alcoholic.jumo_server.domain.tastingnote.repository.AiTastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteSimilarityVectorsRepository;
 import team_alcoholic.jumo_server.domain.user.domain.User;
@@ -25,6 +27,7 @@ public class TastingNoteService {
     private final TastingNoteSimilarityVectorsRepository tastingNoteSimilarityVectorsRepository;
     private final TastingNoteRepository tastingNoteRepository;
     private final LiquorRepository liquorRepository;
+    private final AiTastingNoteRepository aiTastingNoteRepository;
     private final ChatClient chatClient;
     private final ObjectMapper objectMapper;
 
@@ -45,7 +48,7 @@ public class TastingNoteService {
     public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO, User user) {
 
         Liquor liquor = liquorRepository.findById(tastingNoteReqDTO.getLiquorId())
-                .orElseThrow(() -> new IllegalArgumentException("비상 liquor ID"));
+                .orElseThrow(() -> new LiquorNotFoundException(tastingNoteReqDTO.getLiquorId()));
         TastingNote newTastingNote = convertToEntity(tastingNoteReqDTO, liquor, user);
 
         return tastingNoteRepository.save(newTastingNote).getId();
@@ -89,8 +92,12 @@ public class TastingNoteService {
                 .orElseThrow(() -> new LiquorNotFoundException(liquorId));
         String liquorInfo = liquorToStringConverter(liquor);
         String generation = generateFromChatClient(liquorInfo);
+        GenerateTastingNotesResDTO tastingNotesResDTO = parseGenerationResult(generation);
 
-        return parseGenerationResult(generation);
+        // AI 테이스팅 노트를 저장
+        saveAiTastingNote(tastingNotesResDTO, liquor);
+
+        return tastingNotesResDTO;
     }
 
     private String generateFromChatClient(String liquorInfo) {
@@ -105,7 +112,23 @@ public class TastingNoteService {
             // JSON 문자열을 DTO 객체로 변환
             return objectMapper.readValue(generation, GenerateTastingNotesResDTO.class);
         } catch (Exception e) {
-           throw new IllegalArgumentException("테이스팅 노트 생성에 실패했습니다.");
+            throw new IllegalArgumentException("테이스팅 노트 생성에 실패했습니다.");
+        }
+    }
+
+    // 저장 실패해도 ai결과값은 응답함
+    private void saveAiTastingNote(GenerateTastingNotesResDTO tastingNotesResDTO, Liquor liquor) {
+        try {
+            AiTastingNote aiTastingNote = AiTastingNote.builder()
+                    .liquor(liquor)
+                    .tastingNotesAroma(String.join(", ", tastingNotesResDTO.getNoseNotes()))
+                    .tastingNotesTaste(String.join(", ", tastingNotesResDTO.getPalateNotes()))
+                    .tastingNotesFinish(String.join(", ", tastingNotesResDTO.getFinishNotes()))
+                    .build();
+
+            aiTastingNoteRepository.save(aiTastingNote);
+        } catch (Exception e) {
+            System.err.println("Failed to save AI tasting note to the database: " + e.getMessage());
         }
     }
 
