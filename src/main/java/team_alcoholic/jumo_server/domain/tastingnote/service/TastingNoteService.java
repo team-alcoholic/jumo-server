@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
+import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteListResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteReqDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteSimilarResDto;
@@ -72,8 +73,8 @@ public class TastingNoteService {
     }
 
     /** Liquor id에 해당하는 테이스팅 노트 목록을 반환 */
-    public List<TastingNoteResDTO> getTastingNoteListByLiquor(Long liquor) {
+    public List<TastingNoteListResDTO> getTastingNoteListByLiquor(Long liquor) {
         List<TastingNote> result = tastingNoteRepository.findTastingNotesByLiquorId(liquor);
-        return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
+        return result.stream().map(TastingNoteListResDTO::fromEntity).collect(Collectors.toList());
     }
 }

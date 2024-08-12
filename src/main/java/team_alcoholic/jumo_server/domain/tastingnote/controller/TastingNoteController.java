@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
+import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteListResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteReqDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteSimilarResDto;
@@ -56,8 +57,8 @@ public class TastingNoteController {
     }
 
     @GetMapping("/tasting-notes/liquor/{id}")
-    public ResponseEntity<List<TastingNoteResDTO>> getTastingNoteListByLiquor(@PathVariable Long id) {
-        List<TastingNoteResDTO> result = tastingNoteService.getTastingNoteListByLiquor(id);
+    public ResponseEntity<List<TastingNoteListResDTO>> getTastingNoteListByLiquor(@PathVariable Long id) {
+        List<TastingNoteListResDTO> result = tastingNoteService.getTastingNoteListByLiquor(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
