@@ -55,6 +55,12 @@ public class TastingNoteController {
         return new ResponseEntity<>(tastingNoteId, HttpStatus.CREATED);
     }
 
+    @GetMapping("/tasting-notes/liquor/{id}")
+    public ResponseEntity<List<TastingNoteResDTO>> getTastingNoteListByLiquor(@PathVariable Long id) {
+        List<TastingNoteResDTO> result = tastingNoteService.getTastingNoteListByLiquor(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/tasting-notes/{id}")
     public ResponseEntity<TastingNoteResDTO> getTastingNoteById(@PathVariable Long id, HttpServletRequest request) {
         TastingNoteResDTO tastingNoteResDTO = tastingNoteService.getTastingNoteById(id);
