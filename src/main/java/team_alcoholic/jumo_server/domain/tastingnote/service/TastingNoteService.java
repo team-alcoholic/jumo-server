@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
+import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteListResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteReqDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteResDTO;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteSimilarResDto;
@@ -37,14 +38,10 @@ public class TastingNoteService {
 
     }
 
-
     public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO, User user) {
-
-
 
         Liquor liquor = liquorRepository.findById(tastingNoteReqDTO.getLiquorId())
                 .orElseThrow(() -> new IllegalArgumentException("비상 liquor ID"));
-
         TastingNote newTastingNote = convertToEntity(tastingNoteReqDTO, liquor, user);
 
         return tastingNoteRepository.save(newTastingNote).getId();
@@ -72,7 +69,12 @@ public class TastingNoteService {
         TastingNote tastingNote = tastingNoteRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid tasting note ID"));
 
-
         return TastingNoteResDTO.fromEntity(tastingNote);
+    }
+
+    /** Liquor id에 해당하는 테이스팅 노트 목록을 반환 */
+    public List<TastingNoteListResDTO> getTastingNoteListByLiquor(Long liquor) {
+        List<TastingNote> result = tastingNoteRepository.findTastingNotesByLiquorId(liquor);
+        return result.stream().map(TastingNoteListResDTO::fromEntity).collect(Collectors.toList());
     }
 }
