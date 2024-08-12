@@ -45,10 +45,15 @@ public class TastingNoteController {
     public ResponseEntity<Long> saveTastingNote(@RequestBody @Valid TastingNoteReqDTO tastingNoteReqDTO,
                                                 @AuthenticationPrincipal OAuth2User oAuth2User) {
 
+
+
+
         // 임시로 처리
         if (oAuth2User == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
+
+
         long userId = Long.parseLong(Objects.requireNonNull(oAuth2User.getAttribute("id")).toString());
         User user = userService.findUserById(userId);
         Long tastingNoteId = tastingNoteService.saveTastingNote(tastingNoteReqDTO, user);

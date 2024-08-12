@@ -20,7 +20,7 @@ public record TastingNoteResDTO(
         String finishNotes,
         String createdAt,
         String updatedAt,
-        String createdBy
+        String author
 ) {
 
     @Builder
@@ -44,7 +44,7 @@ public record TastingNoteResDTO(
                 .finishNotes(tastingNote.getFinishNotes())
                 .createdAt(tastingNote.getCreatedAt().toString())
                 .updatedAt(tastingNote.getUpdatedAt().toString())
-                .createdBy(tastingNote.getUser().getProfileNickname())
+                .author(tastingNote.getUser().getProfileNickname())
                 .build();
     }
 }
