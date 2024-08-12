@@ -1,21 +1,14 @@
 package team_alcoholic.jumo_server.domain.tastingnote.controller;
 
-import com.amazonaws.services.secretsmanager.model.ResourceNotFoundException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
-import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteListResDTO;
-import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteReqDTO;
-import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteResDTO;
-import team_alcoholic.jumo_server.domain.tastingnote.dto.TastingNoteSimilarResDto;
+import team_alcoholic.jumo_server.domain.tastingnote.dto.*;
 import team_alcoholic.jumo_server.domain.tastingnote.service.TastingNoteService;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.domain.user.service.UserService;
@@ -42,11 +35,16 @@ public class TastingNoteController {
     }
 
 
+    @GetMapping("/ai-similar-tasting-notes/{liquorId}")
+    public GenerateTastingNotesResDTO generateTastingNotes(@PathVariable Long liquorId) {
+        return tastingNoteService.generateTastingNotes(liquorId);
+
+    }
+
+
     @PostMapping("/tasting-notes")
     public ResponseEntity<Long> saveTastingNote(@RequestBody @Valid TastingNoteReqDTO tastingNoteReqDTO,
                                                 @AuthenticationPrincipal OAuth2User oAuth2User) {
-
-
 
 
         // 임시로 처리
