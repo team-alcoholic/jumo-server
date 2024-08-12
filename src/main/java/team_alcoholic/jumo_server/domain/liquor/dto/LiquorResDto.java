@@ -2,6 +2,7 @@ package team_alcoholic.jumo_server.domain.liquor.dto;
 
 import lombok.Builder;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
+import team_alcoholic.jumo_server.domain.tastingnote.dto.AiNotesResDTO;
 
 public record LiquorResDto(
         String thumbnailImageUrl,
@@ -16,6 +17,7 @@ public record LiquorResDto(
         String tastingNotesAroma,
         String tastingNotesTaste,
         String tastingNotesFinish,
+        AiNotesResDTO aiNotes,
         String createdAt,
         String updatedAt,
         String createdBy,
@@ -39,6 +41,7 @@ public record LiquorResDto(
                 .tastingNotesAroma(liquor.getTastingNotesAroma())
                 .tastingNotesTaste(liquor.getTastingNotesTaste())
                 .tastingNotesFinish(liquor.getTastingNotesFinish())
+                .aiNotes(AiNotesResDTO.fromEntity(liquor.getAiTastingNote()))
                 .createdAt(liquor.getCreatedAt().toString())
                 .updatedAt(liquor.getUpdatedAt().toString())
                 .createdBy("dailyshot".equals(liquor.getCreatedBy()) ? "jumo" : liquor.getCreatedBy())
