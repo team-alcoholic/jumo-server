@@ -26,6 +26,7 @@ public class User extends BaseTimeEntity {
     private String profileNickname;
     private String profileImage;
     private String profileThumbnailImage;
+    private String jumoNickname;
 
 
 }

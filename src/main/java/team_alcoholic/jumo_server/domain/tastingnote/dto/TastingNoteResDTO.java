@@ -44,7 +44,7 @@ public record TastingNoteResDTO(
                 .finishNotes(tastingNote.getFinishNotes())
                 .createdAt(tastingNote.getCreatedAt().toString())
                 .updatedAt(tastingNote.getUpdatedAt().toString())
-                .author(tastingNote.getUser().getProfileNickname())
+                .author(tastingNote.getUser().getJumoNickname())
                 .build();
     }
 }

@@ -31,14 +31,7 @@ public record TastingNoteListResDTO(
     }
 
     public static TastingNoteListResDTO fromEntity(TastingNote tastingNote) {
-        UserDTO userDto = UserDTO.builder()
-            .id(tastingNote.getUser().getId())
-            .provider(tastingNote.getUser().getProvider())
-            .providerId(tastingNote.getUser().getProviderId())
-            .profileNickname(tastingNote.getUser().getProfileNickname())
-            .profileImage(tastingNote.getUser().getProfileImage())
-            .profileThumbnailImage(tastingNote.getUser().getProfileThumbnailImage())
-            .build();
+        UserDTO userDto =UserDTO.fromEntity(tastingNote.getUser());
 
         return TastingNoteListResDTO.builder()
             .id(tastingNote.getId())
