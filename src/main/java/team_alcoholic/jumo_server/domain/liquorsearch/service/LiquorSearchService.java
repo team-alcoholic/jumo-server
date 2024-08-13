@@ -1,6 +1,7 @@
 package team_alcoholic.jumo_server.domain.liquorsearch.service;
 
 import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch.core.SearchRequest;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
@@ -24,10 +25,17 @@ public class LiquorSearchService {
     public List<LiquorES> search(String keyword) {
         List<LiquorES> resultList = new ArrayList<>();
 
+//        SearchRequest request = new SearchRequest.Builder()
+//            .index(indexName)
+//            .query(q -> q.queryString(qs -> qs.fields("ko_name").query(keyword)))
+//            .build();
+
         SearchRequest request = new SearchRequest.Builder()
-            .index(indexName)
-            .query(q -> q.queryString(qs -> qs.fields("ko_name").query(keyword)))
-            .build();
+                .index(indexName)
+                .query(q -> q.match(m -> m.field("ko_name")
+                        .query(FieldValue.of(keyword))
+                        .fuzziness("AUTO")))
+                .build();
 
         SearchResponse<LiquorES> response = null;
         try {

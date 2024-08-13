@@ -12,12 +12,26 @@ public class GetRedirectUrlFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpSession session = httpRequest.getSession();
-        String redirectUrl = httpRequest.getParameter("redirectTo");
+        StringBuffer requestURL = httpRequest.getRequestURL();
+        String queryString = httpRequest.getQueryString();
 
-        // 리다이렉트 URL이 존재하면 세션에 저장
-        if (redirectUrl != null) {
-            session.setAttribute("redirectUrl", redirectUrl);
+        if (queryString != null) {
+            requestURL.append('?').append(queryString);
+        }
+
+        String fullUrl = requestURL.toString();
+        System.out.println("Full request URL: " + fullUrl);
+
+        // /oauth2/authorization/kakao 경로 확인
+        if (fullUrl.contains("/oauth2/authorization/kakao")) {
+            String redirectUrl = httpRequest.getParameter("redirectTo");
+
+            // redirectTo 파라미터가 있는 경우에만 세션 생성 및 저장
+            if (redirectUrl != null && !redirectUrl.isEmpty()) {
+                HttpSession session = httpRequest.getSession(true); // 세션 생성
+                session.setAttribute("redirectUrl", redirectUrl);
+                System.out.println("Stored redirectUrl in session: " + redirectUrl);
+            }
         }
 
         chain.doFilter(request, response);
