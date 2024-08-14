@@ -60,8 +60,8 @@ public class TastingNoteController {
     }
 
     @GetMapping("/tasting-notes/liquor/{id}")
-    public ResponseEntity<List<TastingNoteListResDTO>> getTastingNoteListByLiquor(@PathVariable Long id) {
-        List<TastingNoteListResDTO> result = tastingNoteService.getTastingNoteListByLiquor(id);
+    public ResponseEntity<List<TastingNoteResDTO>> getTastingNoteListByLiquor(@PathVariable Long id) {
+        List<TastingNoteResDTO> result = tastingNoteService.getTastingNoteListByLiquor(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

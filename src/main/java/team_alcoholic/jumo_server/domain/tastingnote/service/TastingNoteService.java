@@ -82,9 +82,9 @@ public class TastingNoteService {
     /**
      * Liquor id에 해당하는 테이스팅 노트 목록을 반환
      */
-    public List<TastingNoteListResDTO> getTastingNoteListByLiquor(Long liquor) {
+    public List<TastingNoteResDTO> getTastingNoteListByLiquor(Long liquor) {
         List<TastingNote> result = tastingNoteRepository.findTastingNotesByLiquorId(liquor);
-        return result.stream().map(TastingNoteListResDTO::fromEntity).collect(Collectors.toList());
+        return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
     }
 
     public GenerateTastingNotesResDTO generateTastingNotes(Long liquorId) {
