@@ -18,6 +18,7 @@ import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -75,6 +76,12 @@ public class TastingNoteController {
     @GetMapping("/tasting-notes/liquor/{id}")
     public ResponseEntity<List<TastingNoteResDTO>> getTastingNoteListByLiquor(@PathVariable Long id) {
         List<TastingNoteResDTO> result = tastingNoteService.getTastingNoteListByLiquor(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/tasting-notes/user/{uuid}")
+    public ResponseEntity<List<TastingNoteResDTO>> getTastingNoteListByUser(@PathVariable String uuid) {
+        List<TastingNoteResDTO> result = tastingNoteService.getTastingNoteListByUser(uuid);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
