@@ -32,6 +32,7 @@ public class CustomOAuth2User implements OAuth2User, Serializable {
         attributes.put("profileImage", userDTO.getProfileImage());
         attributes.put("profileThumbnailImage", userDTO.getProfileThumbnailImage());
         attributes.put("id", userDTO.getId());
+        attributes.put("userUuid", userDTO.getUserUuid());
         return attributes;
     }
 

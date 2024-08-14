@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import team_alcoholic.jumo_server.domain.user.dto.UserResDTO;
 import team_alcoholic.jumo_server.domain.user.service.UserService;
 
 import java.util.Map;
@@ -26,10 +27,11 @@ public class UserController {
      * @return
      */
     @GetMapping()
-    public ResponseEntity<Map<String, Object>> user(@AuthenticationPrincipal OAuth2User oAuth2User) {
+    public ResponseEntity<UserResDTO> user(@AuthenticationPrincipal OAuth2User oAuth2User) {
         if (oAuth2User == null) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(oAuth2User.getAttributes(), HttpStatus.OK);
+        return new ResponseEntity<>(
+                UserResDTO.fromOAuth2User(oAuth2User), HttpStatus.OK);
     }
 }
