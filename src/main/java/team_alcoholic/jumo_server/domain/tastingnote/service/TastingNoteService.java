@@ -20,6 +20,7 @@ import team_alcoholic.jumo_server.domain.user.domain.User;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +87,15 @@ public class TastingNoteService {
      */
     public List<TastingNoteResDTO> getTastingNoteListByLiquor(Long liquor) {
         List<TastingNote> result = tastingNoteRepository.findTastingNotesByLiquorId(liquor);
+        return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
+    }
+
+    /**
+     * User uuid에 해당하는 테이스팅 노트 목록을 반환
+     */
+    public List<TastingNoteResDTO> getTastingNoteListByUser(String userUuid) {
+        UUID uuid = UUID.fromString(userUuid);
+        List<TastingNote> result = tastingNoteRepository.findTastingNotesByUserUuId(uuid);
         return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
     }
 
