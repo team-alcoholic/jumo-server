@@ -5,6 +5,7 @@ import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.AiNotesResDTO;
 
 public record LiquorResDto(
+        Long id,
         String thumbnailImageUrl,
         String koName,
         String enName,
@@ -29,6 +30,7 @@ public record LiquorResDto(
 
     public static LiquorResDto fromEntity(Liquor liquor) {
         return LiquorResDto.builder()
+                .id(liquor.getId())
                 .thumbnailImageUrl(liquor.getThumbnailImageUrl())
                 .koName(liquor.getKoName())
                 .enName(liquor.getEnName())
