@@ -23,8 +23,8 @@
 
         <appender name="aws_cloudwatch_log" class="ca.pjer.logback.AwsLogsAppender">
             <encoder>
-                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
-                <charset>${CONSOLE_LOG_CHARSET}</charset>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <charset>${FILE_LOG_CHARSET}</charset>
             </encoder>
             <logGroupName>${name}</logGroupName>
             <logStreamUuidPrefix>jumo-server/</logStreamUuidPrefix>
