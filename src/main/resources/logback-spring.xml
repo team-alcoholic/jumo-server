@@ -30,7 +30,7 @@
             <logStreamUuidPrefix>jumo-server/</logStreamUuidPrefix>
             <logRegion>ap-northeast-2</logRegion>
             <maxBatchLogEvents>50</maxBatchLogEvents>
-            <maxFlushTimeMillis>60000</maxFlushTimeMillis>
+            <maxFlushTimeMillis>30000</maxFlushTimeMillis>
             <maxBlockTimeMillis>5000</maxBlockTimeMillis>
             <retentionTimeDays>0</retentionTimeDays>
             <accessKeyId>${accesskey}</accessKeyId>
