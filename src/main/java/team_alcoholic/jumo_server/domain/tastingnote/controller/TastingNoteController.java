@@ -14,7 +14,6 @@ import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.domain.user.service.UserService;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -43,7 +42,7 @@ public class TastingNoteController {
 
 
     @PostMapping("/tasting-notes")
-    public ResponseEntity<Long> saveTastingNote(@RequestBody @Valid TastingNoteReqDTO tastingNoteReqDTO,
+    public ResponseEntity<Long> saveTastingNote(@RequestBody @Valid SaveTastingNoteReqDTO saveTastingNoteReqDTO,
                                                 @AuthenticationPrincipal OAuth2User oAuth2User) {
         // 임시로 처리
         if (oAuth2User == null) {
@@ -52,7 +51,7 @@ public class TastingNoteController {
 
         long userId = Long.parseLong(Objects.requireNonNull(oAuth2User.getAttribute("id")).toString());
         User user = userService.findUserById(userId);
-        Long tastingNoteId = tastingNoteService.saveTastingNote(tastingNoteReqDTO, user);
+        Long tastingNoteId = tastingNoteService.saveTastingNote(saveTastingNoteReqDTO, user);
         return new ResponseEntity<>(tastingNoteId, HttpStatus.CREATED);
     }
 

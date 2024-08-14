@@ -18,7 +18,6 @@ import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteSimil
 import team_alcoholic.jumo_server.domain.user.domain.User;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,16 +45,16 @@ public class TastingNoteService {
 
     }
 
-    public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO, User user) {
+    public Long saveTastingNote(SaveTastingNoteReqDTO saveTastingNoteReqDTO, User user) {
 
-        Liquor liquor = liquorRepository.findById(tastingNoteReqDTO.getLiquorId())
-                .orElseThrow(() -> new LiquorNotFoundException(tastingNoteReqDTO.getLiquorId()));
-        TastingNote newTastingNote = convertToEntity(tastingNoteReqDTO, liquor, user);
+        Liquor liquor = liquorRepository.findById(saveTastingNoteReqDTO.getLiquorId())
+                .orElseThrow(() -> new LiquorNotFoundException(saveTastingNoteReqDTO.getLiquorId()));
+        TastingNote newTastingNote = convertToEntity(saveTastingNoteReqDTO, liquor, user);
 
         return tastingNoteRepository.save(newTastingNote).getId();
     }
 
-    private TastingNote convertToEntity(TastingNoteReqDTO dto, Liquor liquor, User user) {
+    private TastingNote convertToEntity(SaveTastingNoteReqDTO dto, Liquor liquor, User user) {
         return TastingNote.builder()
                 .user(user)
                 .liquor(liquor)

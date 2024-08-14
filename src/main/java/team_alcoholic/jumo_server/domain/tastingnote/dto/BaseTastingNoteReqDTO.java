@@ -6,9 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TastingNoteReqDTO {
-
-    private Long liquorId;
+public abstract class BaseTastingNoteReqDTO {
 
     private Integer noseScore;
     private Integer palateScore;
@@ -30,5 +28,4 @@ public class TastingNoteReqDTO {
     private String palateNotes;
     @Size(max = 255)
     private String finishNotes;
-
 }
