@@ -5,19 +5,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.liquor.exception.LiquorNotFoundException;
 import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.AiTastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.*;
+import team_alcoholic.jumo_server.domain.tastingnote.exception.TastingNoteNotFoundException;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.AiTastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteSimilarityVectorsRepository;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,16 +47,16 @@ public class TastingNoteService {
 
     }
 
-    public Long saveTastingNote(TastingNoteReqDTO tastingNoteReqDTO, User user) {
+    public Long saveTastingNote(SaveTastingNoteReqDTO saveTastingNoteReqDTO, User user) {
 
-        Liquor liquor = liquorRepository.findById(tastingNoteReqDTO.getLiquorId())
-                .orElseThrow(() -> new LiquorNotFoundException(tastingNoteReqDTO.getLiquorId()));
-        TastingNote newTastingNote = convertToEntity(tastingNoteReqDTO, liquor, user);
+        Liquor liquor = liquorRepository.findById(saveTastingNoteReqDTO.getLiquorId())
+                .orElseThrow(() -> new LiquorNotFoundException(saveTastingNoteReqDTO.getLiquorId()));
+        TastingNote newTastingNote = convertToEntity(saveTastingNoteReqDTO, liquor, user);
 
         return tastingNoteRepository.save(newTastingNote).getId();
     }
 
-    private TastingNote convertToEntity(TastingNoteReqDTO dto, Liquor liquor, User user) {
+    private TastingNote convertToEntity(SaveTastingNoteReqDTO dto, Liquor liquor, User user) {
         return TastingNote.builder()
                 .user(user)
                 .liquor(liquor)
@@ -74,7 +76,7 @@ public class TastingNoteService {
 
     public TastingNoteResDTO getTastingNoteById(Long id) {
         TastingNote tastingNote = tastingNoteRepository.findById(id)
-                .orElseThrow(() -> new LiquorNotFoundException(id));
+                .orElseThrow(() -> new TastingNoteNotFoundException(id));
 
         return TastingNoteResDTO.fromEntity(tastingNote);
     }
@@ -82,9 +84,9 @@ public class TastingNoteService {
     /**
      * Liquor id에 해당하는 테이스팅 노트 목록을 반환
      */
-    public List<TastingNoteListResDTO> getTastingNoteListByLiquor(Long liquor) {
+    public List<TastingNoteResDTO> getTastingNoteListByLiquor(Long liquor) {
         List<TastingNote> result = tastingNoteRepository.findTastingNotesByLiquorId(liquor);
-        return result.stream().map(TastingNoteListResDTO::fromEntity).collect(Collectors.toList());
+        return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
     }
 
     public GenerateTastingNotesResDTO generateTastingNotes(Long liquorId) {
@@ -98,6 +100,32 @@ public class TastingNoteService {
         saveAiTastingNote(tastingNotesResDTO, liquor);
 
         return tastingNotesResDTO;
+    }
+
+    @Transactional
+    public Long updateTastingNote(Long id, UpdateTastingNoteReqDTO updateTastingNoteReqDTO, User user) throws AccessDeniedException {
+        TastingNote tastingNote = tastingNoteRepository.findById(id)
+                .orElseThrow(() -> new TastingNoteNotFoundException(id));
+
+        if (!tastingNote.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You do not have permission to update this tasting note.");
+        }
+
+        tastingNote.updateTastingNote(
+                updateTastingNoteReqDTO.getNoseScore(),
+                updateTastingNoteReqDTO.getPalateScore(),
+                updateTastingNoteReqDTO.getFinishScore(),
+                updateTastingNoteReqDTO.getNoseMemo(),
+                updateTastingNoteReqDTO.getPalateMemo(),
+                updateTastingNoteReqDTO.getFinishMemo(),
+                updateTastingNoteReqDTO.getOverallNote(),
+                updateTastingNoteReqDTO.getMood(),
+                updateTastingNoteReqDTO.getNoseNotes(),
+                updateTastingNoteReqDTO.getPalateNotes(),
+                updateTastingNoteReqDTO.getFinishNotes()
+        );
+
+        return tastingNote.getId();
     }
 
     private String generateFromChatClient(String liquorInfo) {
@@ -167,4 +195,6 @@ public class TastingNoteService {
 
         return liquorInfo.toString();
     }
+
+
 }
