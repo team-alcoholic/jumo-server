@@ -47,5 +47,24 @@ public class TastingNote extends BaseEntity {
 
     @ManyToOne
     private User user;
+
+    public void updateTastingNote(Integer noseScore, Integer palateScore, Integer finishScore,
+                                  String noseMemo, String palateMemo, String finishMemo,
+                                  String overallNote, String mood,
+                                  String noseNotes, String palateNotes, String finishNotes) {
+        this.noseScore = noseScore;
+        this.palateScore = palateScore;
+        this.finishScore = finishScore;
+        this.noseMemo = noseMemo;
+        this.palateMemo = palateMemo;
+        this.finishMemo = finishMemo;
+        this.overallNote = overallNote;
+        this.mood = mood;
+        this.noseNotes = noseNotes;
+        this.palateNotes = palateNotes;
+        this.finishNotes = finishNotes;
+    }
+
+
 }
 

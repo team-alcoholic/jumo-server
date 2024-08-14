@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team_alcoholic.jumo_server.domain.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.domain.liquor.exception.LiquorNotFoundException;
 import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
@@ -17,6 +18,7 @@ import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteRepos
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteSimilarityVectorsRepository;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,6 +102,32 @@ public class TastingNoteService {
         return tastingNotesResDTO;
     }
 
+    @Transactional
+    public Long updateTastingNote(Long id, UpdateTastingNoteReqDTO updateTastingNoteReqDTO, User user) throws AccessDeniedException {
+        TastingNote tastingNote = tastingNoteRepository.findById(id)
+                .orElseThrow(() -> new TastingNoteNotFoundException(id));
+
+        if (!tastingNote.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You do not have permission to update this tasting note.");
+        }
+
+        tastingNote.updateTastingNote(
+                updateTastingNoteReqDTO.getNoseScore(),
+                updateTastingNoteReqDTO.getPalateScore(),
+                updateTastingNoteReqDTO.getFinishScore(),
+                updateTastingNoteReqDTO.getNoseMemo(),
+                updateTastingNoteReqDTO.getPalateMemo(),
+                updateTastingNoteReqDTO.getFinishMemo(),
+                updateTastingNoteReqDTO.getOverallNote(),
+                updateTastingNoteReqDTO.getMood(),
+                updateTastingNoteReqDTO.getNoseNotes(),
+                updateTastingNoteReqDTO.getPalateNotes(),
+                updateTastingNoteReqDTO.getFinishNotes()
+        );
+
+        return tastingNote.getId();
+    }
+
     private String generateFromChatClient(String liquorInfo) {
         return chatClient.prompt()
                 .user(liquorInfo)
@@ -167,4 +195,6 @@ public class TastingNoteService {
 
         return liquorInfo.toString();
     }
+
+
 }
