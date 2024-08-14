@@ -11,6 +11,7 @@ import team_alcoholic.jumo_server.domain.liquor.repository.LiquorRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.AiTastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.dto.*;
+import team_alcoholic.jumo_server.domain.tastingnote.exception.TastingNoteNotFoundException;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.AiTastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteRepository;
 import team_alcoholic.jumo_server.domain.tastingnote.repository.TastingNoteSimilarityVectorsRepository;
@@ -74,7 +75,7 @@ public class TastingNoteService {
 
     public TastingNoteResDTO getTastingNoteById(Long id) {
         TastingNote tastingNote = tastingNoteRepository.findById(id)
-                .orElseThrow(() -> new LiquorNotFoundException(id));
+                .orElseThrow(() -> new TastingNoteNotFoundException(id));
 
         return TastingNoteResDTO.fromEntity(tastingNote);
     }
