@@ -26,7 +26,7 @@ public class LiquorSearchService {
 
     public List<LiquorES> search(String keyword) {
 
-        log.info("들어온 키워드", keyword);
+        log.info("들어온 키워드"+ keyword);
 
         List<LiquorES> resultList = new ArrayList<>();
 
@@ -57,11 +57,15 @@ public class LiquorSearchService {
 
         SearchResponse<LiquorES> response = null;
         try {
+            log.info("호출"+ keyword);
+
             response = openSearchClient.search(request, LiquorES.class);
             for (Hit<LiquorES> hit : response.hits().hits()) {
                 resultList.add(hit.source());
+
             }
-            log.info("검색 결과", resultList);
+                log.info("검색 결과 수"+resultList.size());
+            log.info("검색 결과"+ resultList);
             return resultList;
         } catch (IOException e) {
             throw new RuntimeException(e);
