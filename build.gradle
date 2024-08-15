@@ -21,6 +21,8 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
@@ -28,12 +30,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // AWS Cloud
     implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
-
     // AWS CloudWatch logback appender
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
+    // AWS OpenSearch Service
+    implementation 'org.opensearch.client:opensearch-rest-client:2.11.0'
+    implementation 'org.opensearch.client:opensearch-java:2.6.0'
+
+    // JSON
+    implementation 'jakarta.json:jakarta.json-api'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
@@ -47,13 +55,19 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
-    // Redis
-//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-//    implementation 'org.springframework.session:spring-session-data-redis'
+    //Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.session:spring-session-data-redis'
 
     //jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // spring ai
+    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0-SNAPSHOT")
+//    implementation 'org.springframework.ai:spring-ai-openai'
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

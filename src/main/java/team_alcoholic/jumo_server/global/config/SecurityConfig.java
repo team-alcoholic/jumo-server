@@ -1,6 +1,7 @@
 package team_alcoholic.jumo_server.global.config;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +10,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import team_alcoholic.jumo_server.domain.auth.service.OAuth2UserService;
+import org.springframework.security.web.savedrequest.RequestCache;
+
 
 @Configuration
 @EnableWebSecurity
@@ -22,39 +27,42 @@ public class SecurityConfig {
     @Value("${service.url}")
     private String serviceUrl;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new GetRedirectUrlFilter(), ChannelProcessingFilter.class) // 필터 체인의 맨 앞에 필터 추가
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig
-
-                                .userService(oAuth2UserService)
-                        )
+                        .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
                         .successHandler((request, response, authentication) -> {
-                            response.sendRedirect(serviceUrl);
-                        })
-                )
+                            HttpSession session = request.getSession();
+                            String redirectUrl = (String) session.getAttribute("redirectUrl");
+                            if (redirectUrl == null || redirectUrl.isEmpty()) {
+                                redirectUrl = serviceUrl;
+                            }
+
+                            response.sendRedirect(redirectUrl);
+                        }))
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("SESSION")
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
                         })
                 );
 
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**", "/", "/oauth2/**", "/login/**", "/logout", "/region/**", "/meeting/**").permitAll()
-                        .anyRequest().authenticated()
-                );
+//        http
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers(String.valueOf(HttpMethod.POST), "/tasting-notes").authenticated()
+//                        .anyRequest().permitAll()
+//                );
 
         return http.build();
     }

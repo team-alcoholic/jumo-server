@@ -5,14 +5,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import team_alcoholic.jumo_server.domain.user.dto.UserDTO;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * 세션에 담기는 사용자 정보를 담는 DTO
  */
 @RequiredArgsConstructor
-public class CustomOAuth2User implements OAuth2User {
+public class CustomOAuth2User implements OAuth2User, Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final UserDTO userDTO;
 
     /**
@@ -27,6 +31,8 @@ public class CustomOAuth2User implements OAuth2User {
         attributes.put("profileNickname", userDTO.getProfileNickname());
         attributes.put("profileImage", userDTO.getProfileImage());
         attributes.put("profileThumbnailImage", userDTO.getProfileThumbnailImage());
+        attributes.put("id", userDTO.getId());
+        attributes.put("userUuid", userDTO.getUserUuid());
         return attributes;
     }
 
@@ -48,5 +54,4 @@ public class CustomOAuth2User implements OAuth2User {
     public String getName() {
         return userDTO.getProvider() + " " + userDTO.getProviderId();
     }
-
 }

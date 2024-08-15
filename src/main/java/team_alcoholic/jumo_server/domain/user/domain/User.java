@@ -1,12 +1,12 @@
 package team_alcoholic.jumo_server.domain.user.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
+
+import java.util.UUID;
 
 
 /**
@@ -26,6 +26,8 @@ public class User extends BaseTimeEntity {
     private String profileNickname;
     private String profileImage;
     private String profileThumbnailImage;
+    private String jumoNickname;
+    private UUID userUuid = UUID.randomUUID();
 
 
 }
