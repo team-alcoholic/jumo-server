@@ -1,5 +1,6 @@
 package team_alcoholic.jumo_server.domain.liquorsearch.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch.core.SearchRequest;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class LiquorSearchService {
 
@@ -23,6 +25,9 @@ public class LiquorSearchService {
     }
 
     public List<LiquorES> search(String keyword) {
+
+        log.info("들어온 키워드", keyword);
+
         List<LiquorES> resultList = new ArrayList<>();
 
 //        SearchRequest request = new SearchRequest.Builder()
@@ -36,6 +41,9 @@ public class LiquorSearchService {
 //                        .query(FieldValue.of(keyword))
 //                        .fuzziness("AUTO")))
 //                .build();
+
+
+
 
         SearchRequest request = new SearchRequest.Builder()
             .index(indexName)
@@ -53,6 +61,7 @@ public class LiquorSearchService {
             for (Hit<LiquorES> hit : response.hits().hits()) {
                 resultList.add(hit.source());
             }
+            log.info("검색 결과", resultList);
             return resultList;
         } catch (IOException e) {
             throw new RuntimeException(e);
