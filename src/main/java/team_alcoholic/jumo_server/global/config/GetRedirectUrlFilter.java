@@ -2,16 +2,22 @@ package team_alcoholic.jumo_server.global.config;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
 public class GetRedirectUrlFilter implements Filter {
 
+    @Value("${service.url}")
+    private String serviceUrl;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
         StringBuffer requestURL = httpRequest.getRequestURL();
         String queryString = httpRequest.getQueryString();
 
@@ -33,6 +39,13 @@ public class GetRedirectUrlFilter implements Filter {
                 System.out.println("Stored redirectUrl in session: " + redirectUrl);
             }
         }
+
+        if (fullUrl.contains("api/v1/login?error")) {
+            System.out.println("Redirect to service url: " + serviceUrl);
+            httpResponse.sendRedirect("https://jumo.im/");
+            return; // 리다이렉트 후 필터 체인 종료
+        }
+
 
         chain.doFilter(request, response);
     }

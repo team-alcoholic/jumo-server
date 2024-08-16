@@ -1,9 +1,13 @@
 package team_alcoholic.jumo_server.domain.liquor.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.AiTastingNote;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
+import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.global.common.domain.BaseEntity;
 
 import java.util.List;
@@ -11,6 +15,9 @@ import java.util.List;
 @Entity
 @Table(name = "liquor_v1")
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Liquor extends BaseEntity {
 
     @Id
@@ -31,6 +38,10 @@ public class Liquor extends BaseEntity {
     private String country;
     private String region;
     private String grapeVariety;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @OneToOne(mappedBy = "liquor", fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private AiTastingNote aiTastingNote;
