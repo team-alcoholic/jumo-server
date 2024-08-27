@@ -23,6 +23,7 @@ public class LiquorES {
     private String product_id;
     private String en_name;
     private String ko_name;
+    private String ko_name_origin;
     private String price;
     private String thumbnail_image_url;
     private String tasting_notes_aroma;
