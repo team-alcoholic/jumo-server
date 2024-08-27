@@ -18,7 +18,7 @@ import java.util.List;
 public class LiquorSearchService {
 
     private final OpenSearchClient openSearchClient;
-    private static final String indexName = "test";
+    private static final String indexName = "liquors";
 
     public LiquorSearchService(OpenSearchClient openSearchClient) {
         this.openSearchClient = openSearchClient;
@@ -42,15 +42,11 @@ public class LiquorSearchService {
 //                        .fuzziness("AUTO")))
 //                .build();
 
-
-
-
         SearchRequest request = new SearchRequest.Builder()
             .index(indexName)
             .query(q -> q.multiMatch(m -> m
                 .query(keyword)
-                .fields("ko_name.nori", "en_name.english")
-                .fuzziness("AUTO")
+                .fields("ko_name.jaso", "en_name.english")
             ))
             .size(20)
             .build();
