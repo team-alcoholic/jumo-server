@@ -26,7 +26,7 @@ public class LiquorSearchService {
 
     public List<LiquorES> search(String keyword) {
 
-        log.info("들어온 키워드: "+ keyword);
+        log.info("검색어: "+ keyword);
 
         List<LiquorES> resultList = new ArrayList<>();
 
