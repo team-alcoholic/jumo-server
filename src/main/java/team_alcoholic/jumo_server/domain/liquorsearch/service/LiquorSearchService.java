@@ -26,21 +26,9 @@ public class LiquorSearchService {
 
     public List<LiquorES> search(String keyword) {
 
-        log.info("들어온 키워드"+ keyword);
+        log.info("들어온 키워드: "+ keyword);
 
         List<LiquorES> resultList = new ArrayList<>();
-
-//        SearchRequest request = new SearchRequest.Builder()
-//            .index(indexName)
-//            .query(q -> q.queryString(qs -> qs.fields("ko_name").query(keyword)))
-//            .build();
-
-//        SearchRequest request = new SearchRequest.Builder()
-//                .index(indexName)
-//                .query(q -> q.match(m -> m.field("ko_name")
-//                        .query(FieldValue.of(keyword))
-//                        .fuzziness("AUTO")))
-//                .build();
 
         SearchRequest request = new SearchRequest.Builder()
             .index(indexName)
@@ -53,15 +41,15 @@ public class LiquorSearchService {
 
         SearchResponse<LiquorES> response = null;
         try {
-            log.info("호출"+ keyword);
+            log.info("opensearch 요청: "+ keyword);
 
             response = openSearchClient.search(request, LiquorES.class);
             for (Hit<LiquorES> hit : response.hits().hits()) {
                 resultList.add(hit.source());
-
             }
-                log.info("검색 결과 수"+resultList.size());
-            log.info("검색 결과"+ resultList);
+
+            log.info("opensearch 응답: "+ resultList);
+
             return resultList;
         } catch (IOException e) {
             throw new RuntimeException(e);
