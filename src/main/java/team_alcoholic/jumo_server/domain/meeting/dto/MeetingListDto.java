@@ -42,8 +42,8 @@ public class MeetingListDto {
         this.status = meeting.getStatus();
         this.meetingAt = meeting.getMeetingAt();
         this.fixAt = meeting.getFixAt();
-        if (meeting.getRegionV2() != null) {
-            this.region = meeting.getRegionV2().getName();
+        if (meeting.getRegion() != null) {
+            this.region = meeting.getRegion().getName();
         }
         this.liquors = meeting.getLiquors();
         this.participatesMin = meeting.getParticipatesMin();
