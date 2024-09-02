@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.domain.meeting.domain.Meeting;
-import team_alcoholic.jumo_server.domain.region.domain.Region;
 
 import java.time.LocalDateTime;
 
