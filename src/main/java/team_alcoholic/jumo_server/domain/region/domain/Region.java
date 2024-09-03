@@ -1,15 +1,24 @@
 package team_alcoholic.jumo_server.domain.region.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-public class Region extends BaseTimeEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "region")
+public class Region {
 
     @Id
-    private String admcd;
-    private String admnm;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String code;
+    private String name;
+    private String codeMajor;
+    private String codeMiddle;
+    private String codeMinor;
 }

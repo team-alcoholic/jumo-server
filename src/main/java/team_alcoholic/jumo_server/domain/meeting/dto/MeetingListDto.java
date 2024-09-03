@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.domain.meeting.domain.Meeting;
-import team_alcoholic.jumo_server.domain.region.domain.Region;
 
 import java.time.LocalDateTime;
 
@@ -44,7 +43,7 @@ public class MeetingListDto {
         this.meetingAt = meeting.getMeetingAt();
         this.fixAt = meeting.getFixAt();
         if (meeting.getRegion() != null) {
-            this.region = meeting.getRegion().getAdmnm();
+            this.region = meeting.getRegion().getName();
         }
         this.liquors = meeting.getLiquors();
         this.participatesMin = meeting.getParticipatesMin();

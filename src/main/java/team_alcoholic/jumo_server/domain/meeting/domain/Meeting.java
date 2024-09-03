@@ -24,7 +24,7 @@ public class Meeting extends BaseTimeEntity {
     private LocalDateTime fixAt;
 
     @ManyToOne
-    @JoinColumn(name = "region", referencedColumnName = "admcd")
+    @JoinColumn(name = "region", referencedColumnName = "id")
     private Region region;
 
     private String place;

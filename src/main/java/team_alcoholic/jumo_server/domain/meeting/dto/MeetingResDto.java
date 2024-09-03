@@ -45,7 +45,7 @@ public class MeetingResDto {
         this.meetingAt = meeting.getMeetingAt();
         this.fixAt = meeting.getFixAt();
         if (meeting.getRegion() != null) {
-            this.region = meeting.getRegion().getAdmnm();
+            this.region = meeting.getRegion().getName();
         }
         this.place = meeting.getPlace();
         this.liquors = meeting.getLiquors();

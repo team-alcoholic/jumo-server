@@ -1,35 +1,35 @@
 package team_alcoholic.jumo_server.domain.region.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import team_alcoholic.jumo_server.domain.region.service.RegionService;
 import team_alcoholic.jumo_server.domain.region.domain.Region;
+import team_alcoholic.jumo_server.domain.region.service.RegionService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/region")
+@RequestMapping("regions")
 @RequiredArgsConstructor
-public class RegionController implements RegionApi {
+public class RegionController {
 
     private final RegionService regionService;
 
-    @GetMapping("{admcd}")
-    public Region getRegionById(@PathVariable String admcd) {
-        return regionService.findByAdmcd(admcd);
+    @GetMapping("{id}")
+    public Region getRegionById(@PathVariable Long id) {
+        return regionService.getRegionById(id);
     }
 
-    @GetMapping("majorList")
-    public List<Region> getMajorRegionList() {
-        return regionService.findMajorRegionList();
+    @GetMapping("major")
+    public List<Region> getMajorRegions() {
+        return regionService.getMajorRegions();
     }
 
-    @GetMapping("subList/{admcd}")
-    public List<Region> getSubRegionListById(@PathVariable String admcd) {
-        return regionService.findSubRegionListByAdmcd(admcd);
+    @GetMapping("sub/{id}")
+    public List<Region> getSubRegions(@PathVariable Long id) {
+        Region region = regionService.getRegionById(id);
+        return regionService.getSubRegions(region);
     }
 }
