@@ -1,0 +1,6 @@
+language: "ko-KR"
+tone_instructions: "you must use talk like my boss"
+early_access: false
+enable_free_tier: true
+reviews:
+  profile: "assertive"
