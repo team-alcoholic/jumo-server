@@ -35,7 +35,7 @@ public class UserController {
      * @param oAuth2User
      * @return
      */
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<UserResDTO> user(@AuthenticationPrincipal OAuth2User oAuth2User) {
         if (oAuth2User == null) {
             throw new UnauthorizedException("로그인이 필요합니다.");
@@ -88,5 +88,15 @@ public class UserController {
     public UserResDTO updateUser(@AuthenticationPrincipal OAuth2User oAuth2User, @RequestBody UserUpdateReq userUpdateReq, HttpSession session) {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return userService.updateUser(userUpdateReq, session);
+    }
+
+    @GetMapping("/random-image")
+    public String getRandomImage() {
+        return userService.getRandomProfileImageUrl();
+    }
+
+    @GetMapping("/random-name")
+    public String getRandomName() {
+        return userService.generateRandomNickname();
     }
 }
