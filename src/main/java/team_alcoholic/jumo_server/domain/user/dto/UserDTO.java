@@ -27,6 +27,7 @@ public class UserDTO implements Serializable {
     private String profileImage;
     private String profileThumbnailImage;
     private UUID userUuid;
+    private boolean isNewUser;
 
     // User 엔티티를 UserDTO로 변환하는 메서드
     public static UserDTO fromEntity(User user) {

@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import team_alcoholic.jumo_server.domain.auth.dto.CustomOAuth2User;
 import team_alcoholic.jumo_server.domain.auth.service.OAuth2UserService;
 import org.springframework.security.web.savedrequest.RequestCache;
 
@@ -38,13 +39,17 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
                         .successHandler((request, response, authentication) -> {
-                            HttpSession session = request.getSession();
-                            String redirectUrl = (String) session.getAttribute("redirectUrl");
-                            if (redirectUrl == null || redirectUrl.isEmpty()) {
-                                redirectUrl = serviceUrl;
+                            CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
+                            if (customOAuth2User.isNewUser()) {
+                                response.sendRedirect(serviceUrl + "/join");
+                            } else {
+                                HttpSession session = request.getSession();
+                                String redirectUrl = (String) session.getAttribute("redirectUrl");
+                                if (redirectUrl == null || redirectUrl.isEmpty()) {
+                                    redirectUrl = serviceUrl;
+                                }
+                                response.sendRedirect(redirectUrl);
                             }
-
-                            response.sendRedirect(redirectUrl);
                         }))
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(customAuthenticationEntryPoint)

@@ -1,16 +1,24 @@
 package team_alcoholic.jumo_server.domain.user.service;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import team_alcoholic.jumo_server.domain.auth.dto.CustomOAuth2User;
 import team_alcoholic.jumo_server.domain.auth.dto.OAuth2Response;
+import team_alcoholic.jumo_server.domain.user.dto.UserResDTO;
+import team_alcoholic.jumo_server.domain.user.dto.UserUpdateReq;
 import team_alcoholic.jumo_server.domain.user.exception.UserNotFoundException;
 import team_alcoholic.jumo_server.domain.user.repository.UserRepository;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.domain.user.dto.UserDTO;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * 사용자 정보를 다루는 서비스
@@ -21,17 +29,20 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
     @Transactional
     public UserDTO getUser(OAuth2Response oAuth2Response) {
         User user = userRepository.findByProviderAndProviderId(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
         System.out.println("user: " + user);
 
-
         if (user == null) {
             user = createUser(oAuth2Response);
+            UserDTO result = UserDTO.fromEntity(user);
+            result.setNewUser(true);
+            return result;
         }
-        return UserDTO.fromEntity(user);
+        UserDTO result = UserDTO.fromEntity(user);
+        result.setNewUser(false);
+        return result;
     }
 
     public User findUserById(Long id) {
@@ -64,7 +75,66 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    private String getRandomProfileImageUrl() {
+    /**
+     * 사용자 정보 수정
+     * @param userUpdateReq, session
+     * @return
+     */
+    @Transactional
+    public UserResDTO updateUser(UserUpdateReq userUpdateReq, HttpSession session) {
+        // 기존 데이터 조회 및 갱신
+        User user = userRepository.findByUserUuid(UUID.fromString(userUpdateReq.getUserUuid()));
+        user.updateFromDto(userUpdateReq);
+        User result = userRepository.save(user);
+
+        // 갱신
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        Authentication authentication = securityContext.getAuthentication();
+
+        if (authentication instanceof OAuth2AuthenticationToken) {
+            OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
+            if (oauthToken.getPrincipal() instanceof CustomOAuth2User) {
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) oauthToken.getPrincipal();
+
+                // 3. CustomOAuth2User의 attributes 업데이트
+                UserDTO newUserDTO = UserDTO.fromEntity(user);
+                customOAuth2User.updateAttributes(newUserDTO);
+
+                // 4. 새로운 Authentication 객체 생성 및 설정
+                Authentication newAuth = new OAuth2AuthenticationToken(
+                    customOAuth2User,
+                    oauthToken.getAuthorities(),
+                    oauthToken.getAuthorizedClientRegistrationId()
+                );
+
+                securityContext.setAuthentication(newAuth);
+                session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+
+//                // HttpSession에 업데이트된 SecurityContext 저장
+//                session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+//
+//                // Redis에 세션 변경사항 저장
+//                sessionRepository.save(session);
+            }
+        }
+
+        Map<String, Object> sessionData = new HashMap<>();
+        // Spring Security Context 정보 출력
+        OAuth2AuthenticationToken auth =
+            (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            OAuth2User oauth2User = auth.getPrincipal();
+            sessionData.put("authenticated_user", oauth2User.getName());
+            sessionData.put("user_attributes", oauth2User.getAttributes());
+            sessionData.put("authorities", auth.getAuthorities());
+        }
+        System.out.println("Current Session Data:");
+        sessionData.forEach((key, value) -> System.out.println(key + ": " + value));
+
+        return UserResDTO.fromEntity(result);
+    }
+
+    public String getRandomProfileImageUrl() {
         List<String> imageUrls = List.of(
                 "https://github.com/user-attachments/assets/36420b2d-e392-4b20-bcda-80d7944d9658",
                 "https://github.com/user-attachments/assets/d247aed1-131f-4160-95f9-b2d6f9880305",
@@ -79,7 +149,7 @@ public class UserService {
     }
 
 
-    private String generateRandomNickname() {
+    public String generateRandomNickname() {
         List<String> adjectives = List.of(
                 "귀여운", "용감한", "똑똑한", "멋진", "강한", "맛있는", "황홀한", "지리는", "따뜻한", "화려한",
                 "기발한", "유쾌한", "상냥한", "부드러운", "청량한", "화끈한", "달콤한", "상큼한", "매력적인", "편안한",

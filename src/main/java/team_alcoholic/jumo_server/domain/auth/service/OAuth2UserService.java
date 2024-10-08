@@ -36,7 +36,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         log.info("OAuth2 사용자 요청이 수신되었습니다. 등록 ID: {}", registrationId);
         OAuth2Response oAuth2Response = getOAuth2Response(oAuth2User, registrationId);
         UserDTO user = userService.getUser(oAuth2Response);
-        return new CustomOAuth2User(user);
+        return new CustomOAuth2User(user, user.isNewUser());
     }
 
     /**

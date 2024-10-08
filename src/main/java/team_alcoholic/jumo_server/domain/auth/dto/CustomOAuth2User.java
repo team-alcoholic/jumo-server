@@ -17,7 +17,13 @@ public class CustomOAuth2User implements OAuth2User, Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    private final UserDTO userDTO;
+    private UserDTO userDTO;
+    private boolean isNewUser;
+
+    public CustomOAuth2User(UserDTO userDTO, boolean isNewUser) {
+        this.userDTO = userDTO;
+        this.isNewUser = isNewUser;
+    }
 
     /**
      * 사용자 속성을 반환하는 메소드
@@ -53,5 +59,11 @@ public class CustomOAuth2User implements OAuth2User, Serializable {
     @Override
     public String getName() {
         return userDTO.getProvider() + " " + userDTO.getProviderId();
+    }
+
+    public boolean isNewUser() { return this.isNewUser; }
+
+    public void updateAttributes(UserDTO newUserDTO) {
+        this.userDTO = newUserDTO;
     }
 }

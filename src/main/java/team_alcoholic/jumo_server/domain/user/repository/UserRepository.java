@@ -3,6 +3,8 @@ package team_alcoholic.jumo_server.domain.user.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 
+import java.util.UUID;
+
 /**
  * 사용자 Repository
  */
@@ -15,4 +17,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return 사용자 정보
      */
     User findByProviderAndProviderId(String provider, String providerId);
+
+    User findByUserUuid(UUID userUuid);
 }
