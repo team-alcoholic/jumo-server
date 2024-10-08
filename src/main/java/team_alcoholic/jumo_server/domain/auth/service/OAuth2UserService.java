@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.domain.auth.dto.KakaoResponse;
 import team_alcoholic.jumo_server.domain.auth.dto.OAuth2Response;
 import team_alcoholic.jumo_server.domain.auth.dto.CustomOAuth2User;
-import team_alcoholic.jumo_server.domain.user.dto.UserDTO;
+import team_alcoholic.jumo_server.domain.user.dto.UserOAuth2DTO;
 import team_alcoholic.jumo_server.domain.user.service.UserService;
 
 /**
@@ -35,7 +35,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         log.info("OAuth2 사용자 요청이 수신되었습니다. 등록 ID: {}", registrationId);
         OAuth2Response oAuth2Response = getOAuth2Response(oAuth2User, registrationId);
-        UserDTO user = userService.getUser(oAuth2Response);
+        UserOAuth2DTO user = userService.findOAuth2User(oAuth2Response);
         return new CustomOAuth2User(user, user.isNewUser());
     }
 

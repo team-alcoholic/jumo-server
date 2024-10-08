@@ -29,6 +29,10 @@ public class User extends BaseTimeEntity {
     private String jumoNickname;
     private UUID userUuid = UUID.randomUUID();
 
+    /**
+     * 사용자 정보 수정 시 UserUpdateReq dto로부터 User 엔티티를 수정하는 메서드
+     * @param dto
+     */
     public void updateFromDto(UserUpdateReq dto) {
         if (dto.getProfileNickname() != null) this.jumoNickname = dto.getProfileNickname();
         if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();

@@ -3,7 +3,7 @@ package team_alcoholic.jumo_server.domain.tastingnote.dto;
 import lombok.Builder;
 import team_alcoholic.jumo_server.domain.liquor.dto.LiquorResDto;
 import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
-import team_alcoholic.jumo_server.domain.user.dto.UserResDTO;
+import team_alcoholic.jumo_server.domain.user.dto.UserRes;
 
 public record TastingNoteResDTO(
         Long id,
@@ -21,7 +21,7 @@ public record TastingNoteResDTO(
         String finishNotes,
         String createdAt,
         String updatedAt,
-        UserResDTO user
+        UserRes user
 ) {
 
     @Builder
@@ -45,7 +45,7 @@ public record TastingNoteResDTO(
                 .finishNotes(tastingNote.getFinishNotes())
                 .createdAt(tastingNote.getCreatedAt().toString())
                 .updatedAt(tastingNote.getUpdatedAt().toString())
-                .user(UserResDTO.fromEntity(tastingNote.getUser()))
+                .user(UserRes.fromEntity(tastingNote.getUser()))
                 .build();
     }
 }

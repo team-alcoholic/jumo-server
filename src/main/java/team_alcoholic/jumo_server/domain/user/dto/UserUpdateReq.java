@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * 사용자 정보 수정 시 사용되는 DTO
+ */
 @Getter @Setter
 @RequiredArgsConstructor
 public class UserUpdateReq {
