@@ -14,7 +14,7 @@ import team_alcoholic.jumo_server.domain.user.dto.UserDTO;
 import team_alcoholic.jumo_server.domain.user.service.UserService;
 
 /**
- * 리소스 서버에서 사용자 정보를 가져와 이를 사용하여 사용자 정보를 조회하거나 생성하고 세션에 등록하는 서비스
+ * OAuth2 서버에서 사용자 정보를 가져와 이를 사용하여 사용자 정보를 조회하거나 생성하고 세션에 등록하는 서비스
  */
 @Slf4j
 @Service

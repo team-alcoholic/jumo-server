@@ -1,4 +1,4 @@
-package team_alcoholic.jumo_server.global.config;
+package team_alcoholic.jumo_server.global.config.oauth2;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
