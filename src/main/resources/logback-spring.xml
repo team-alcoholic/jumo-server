@@ -4,12 +4,21 @@
 
     <!-- 로컬 환경 콘솔 출력 설정 -->
     <springProfile name="default,local,test,local_dev_db">
+        <include resource="./logback-config.xml"/>
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>${CONSOLE_LOG_CHARSET}</charset>
+            </encoder>
+        </appender>
 
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>
+
     </springProfile>
 
     <!--  개발/운영 환경 로깅 설정  -->

@@ -5,10 +5,16 @@ import lombok.Builder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 
-import java.util.Map;
 import java.util.UUID;
 
-public record UserResDTO(
+/**
+ * User 정보 응답 시 사용하는 dto
+ * @param profileNickname
+ * @param profileImage
+ * @param profileThumbnailImage
+ * @param userUuid
+ */
+public record UserRes(
         String profileNickname,
         String profileImage,
         String profileThumbnailImage,
@@ -16,11 +22,11 @@ public record UserResDTO(
 ) {
 
     @Builder
-    public UserResDTO {
+    public UserRes {
     }
 
-    public static UserResDTO fromEntity(User user) {
-        return UserResDTO.builder()
+    public static UserRes fromEntity(User user) {
+        return UserRes.builder()
                 .profileNickname(user.getJumoNickname())
                 .profileImage(user.getProfileImage())
                 .profileThumbnailImage(user.getProfileThumbnailImage())
@@ -28,9 +34,9 @@ public record UserResDTO(
                 .build();
     }
 
-    public static UserResDTO fromOAuth2User(OAuth2User oAuth2User) {
+    public static UserRes fromOAuth2User(OAuth2User oAuth2User) {
         var attributes = oAuth2User.getAttributes();
-        return UserResDTO.builder()
+        return UserRes.builder()
                 .profileNickname((String) attributes.get("profileNickname"))
                 .profileImage((String) attributes.get("profileImage"))
                 .profileThumbnailImage((String) attributes.get("profileThumbnailImage"))

@@ -10,12 +10,13 @@ import java.io.Serializable;
 import java.util.UUID;
 
 /**
- * 사용자 정보를 담는 DTO
+ * User 엔티티의 정보를 CustomOAuth2User dto에 담기 위해 사용하는 dto
+ * DB에 저장되는 사용자 정보와 세션에 저장되는 사용자 정보를 분리하기 위해 사용
  */
 @Getter
 @Setter
 @Builder
-public class UserDTO implements Serializable {
+public class UserOAuth2DTO implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -27,10 +28,14 @@ public class UserDTO implements Serializable {
     private String profileImage;
     private String profileThumbnailImage;
     private UUID userUuid;
+    private boolean isNewUser;
 
-    // User 엔티티를 UserDTO로 변환하는 메서드
-    public static UserDTO fromEntity(User user) {
-        return UserDTO.builder()
+    /**
+     * User 엔티티를 CustomOAuth2User에 담기 위해 UserOAuth2DTO로 변환하는 메서드.
+     * @param user
+     */
+    public static UserOAuth2DTO fromEntity(User user) {
+        return UserOAuth2DTO.builder()
                 .id(user.getId())
                 .provider(user.getProvider())
                 .providerId(user.getProviderId())
