@@ -11,6 +11,7 @@ import java.util.UUID;
 
 /**
  * User 엔티티의 정보를 CustomOAuth2User dto에 담기 위해 사용하는 dto
+ * DB에 저장되는 사용자 정보와 세션에 저장되는 사용자 정보를 분리하기 위해 사용
  */
 @Getter
 @Setter
