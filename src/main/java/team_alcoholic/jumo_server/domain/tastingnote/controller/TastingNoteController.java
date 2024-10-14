@@ -21,29 +21,27 @@ import java.util.Objects;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("v1")
 @RequiredArgsConstructor
 public class TastingNoteController {
 
     private final TastingNoteService tastingNoteService;
     private final UserService userService;
 
-
     @GetMapping("/similar-tasting-notes")
     public TastingNoteSimilarResDto getSimilarTastingNotes(
             @RequestParam String keyword,
             @RequestParam(required = false) List<String> exclude,
-            @RequestParam(defaultValue = "5") int limit) {
-
+            @RequestParam(defaultValue = "5") int limit
+    ) {
         return tastingNoteService.findSimilarTastingNotes(keyword, exclude, limit);
     }
-
 
     @GetMapping("/ai-similar-tasting-notes/{liquorId}")
     public GenerateTastingNotesResDTO generateTastingNotes(@PathVariable Long liquorId) {
         return tastingNoteService.generateTastingNotes(liquorId);
 
     }
-
 
     @PostMapping("/tasting-notes")
     public ResponseEntity<Long> saveTastingNote(@RequestBody @Valid SaveTastingNoteReqDTO saveTastingNoteReqDTO,

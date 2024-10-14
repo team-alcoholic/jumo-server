@@ -36,13 +36,17 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .addFilterBefore(new GetRedirectUrlFilter(), ChannelProcessingFilter.class) // 필터 체인의 맨 앞에 필터 추가
             .oauth2Login(oauth2 -> oauth2
+                .authorizationEndpoint(authorization -> authorization
+                    .baseUri("/v1/oauth2/authorization"))
+                .redirectionEndpoint(redirection -> redirection
+                    .baseUri("/v1/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
                 .successHandler(customOAuth2SuccessHandler))
             .exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
             )
             .logout(logout -> logout
-                .logoutUrl("/logout")
+                .logoutUrl("/v1/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("SESSION")
                 .logoutSuccessHandler((request, response, authentication) -> {

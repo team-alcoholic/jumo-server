@@ -11,7 +11,7 @@ import team_alcoholic.jumo_server.domain.liquorsearch.service.LiquorSearchServic
 import java.util.List;
 
 @RestController
-@RequestMapping("liquorsearch")
+@RequestMapping("v1/liquorsearch")
 @RequiredArgsConstructor
 public class LiquorSearchController {
 

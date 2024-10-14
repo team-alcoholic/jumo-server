@@ -11,7 +11,7 @@ import team_alcoholic.jumo_server.domain.region.service.RegionService;
 import java.util.List;
 
 @RestController
-@RequestMapping("regions")
+@RequestMapping("v1/regions")
 @RequiredArgsConstructor
 public class RegionController {
 

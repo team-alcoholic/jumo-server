@@ -17,7 +17,7 @@ import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("liquors")
+@RequestMapping("v1/liquors")
 @RequiredArgsConstructor
 public class LiquorController {
 

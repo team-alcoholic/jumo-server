@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("meetings")
+@RequestMapping("v1/meetings")
 @RequiredArgsConstructor
 public class MeetingController implements MeetingApi {
 
