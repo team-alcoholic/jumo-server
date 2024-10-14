@@ -24,9 +24,6 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
-    @Value("${service.url}")
-    private String serviceUrl;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -55,6 +52,4 @@ public class SecurityConfig {
             );
         return http.build();
     }
-
-
 }
