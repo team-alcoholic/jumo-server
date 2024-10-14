@@ -5,12 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import team_alcoholic.jumo_server.domain.tastingnote.domain.AiTastingNote;
-import team_alcoholic.jumo_server.domain.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.domain.user.domain.User;
 import team_alcoholic.jumo_server.global.common.domain.BaseEntity;
 
-import java.util.List;
 
 @Entity
 @Table(name = "liquor")

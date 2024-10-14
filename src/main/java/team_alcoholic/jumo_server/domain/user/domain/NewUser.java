@@ -2,7 +2,6 @@ package team_alcoholic.jumo_server.domain.user.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 import team_alcoholic.jumo_server.domain.user.dto.UserUpdateReq;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
 
