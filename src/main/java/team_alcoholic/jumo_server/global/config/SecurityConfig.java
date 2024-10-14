@@ -2,7 +2,6 @@ package team_alcoholic.jumo_server.global.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import team_alcoholic.jumo_server.domain.auth.service.OAuth2UserService;
+import team_alcoholic.jumo_server.v1.auth.service.OAuth2UserService;
 import team_alcoholic.jumo_server.global.config.oauth2.CustomOAuth2SuccessHandler;
 import team_alcoholic.jumo_server.global.config.oauth2.GetRedirectUrlFilter;
 
@@ -24,9 +23,6 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
-    @Value("${service.url}")
-    private String serviceUrl;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -36,13 +32,17 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .addFilterBefore(new GetRedirectUrlFilter(), ChannelProcessingFilter.class) // 필터 체인의 맨 앞에 필터 추가
             .oauth2Login(oauth2 -> oauth2
+                .authorizationEndpoint(authorization -> authorization
+                    .baseUri("/v1/oauth2/authorization"))
+                .redirectionEndpoint(redirection -> redirection
+                    .baseUri("/v1/login/oauth2/code/*"))
                 .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint.userService(oAuth2UserService))
                 .successHandler(customOAuth2SuccessHandler))
             .exceptionHandling(exceptionHandling -> exceptionHandling
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
             )
             .logout(logout -> logout
-                .logoutUrl("/logout")
+                .logoutUrl("/v1/logout")
                 .invalidateHttpSession(true)
                 .deleteCookies("SESSION")
                 .logoutSuccessHandler((request, response, authentication) -> {
@@ -51,6 +51,4 @@ public class SecurityConfig {
             );
         return http.build();
     }
-
-
 }

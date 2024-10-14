@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import team_alcoholic.jumo_server.domain.auth.dto.CustomOAuth2User;
+import team_alcoholic.jumo_server.v1.auth.dto.CustomOAuth2User;
 
 import java.io.IOException;
 
