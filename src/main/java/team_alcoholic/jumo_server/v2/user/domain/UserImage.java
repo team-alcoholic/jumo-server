@@ -15,5 +15,6 @@ public class UserImage extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private NewUser user;
 
-    private String url;
+    private String fileName;
+    private String fileUrl;
 }

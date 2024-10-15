@@ -14,5 +14,6 @@ public class NoteImage extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Note note;
 
-    private String url;
+    private String fileName;
+    private String fileUrl;
 }
