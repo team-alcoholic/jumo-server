@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.v1.user.dto.UserRes;
 import team_alcoholic.jumo_server.v1.user.dto.UserUpdateReq;
-import team_alcoholic.jumo_server.v1.user.service.UserService;
+import team_alcoholic.jumo_server.v1.user.service.UserServiceV1;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 
 import java.io.IOException;
@@ -18,11 +18,11 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("v1/users")
-public class UserController {
+public class UserControllerV1 {
 
     @Value("${service.url}")
     private String serviceUrl;
-    private final UserService userService;
+    private final UserServiceV1 userService;
 
     /**
      * 현재 로그인되어있는 사용자 정보를 세션에서 조회하는 API

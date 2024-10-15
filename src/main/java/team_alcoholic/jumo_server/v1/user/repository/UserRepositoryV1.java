@@ -8,7 +8,7 @@ import java.util.UUID;
 /**
  * 사용자 Repository
  */
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepositoryV1 extends JpaRepository<User, Long> {
 
     /**
      * provider, providerId로 사용자 조회

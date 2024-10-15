@@ -1,4 +1,4 @@
-package team_alcoholic.jumo_server.v1.user.service;
+package team_alcoholic.jumo_server.v2.user.service;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -10,14 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team_alcoholic.jumo_server.v1.auth.dto.CustomOAuth2User;
 import team_alcoholic.jumo_server.v1.auth.dto.OAuth2Response;
-import team_alcoholic.jumo_server.v1.user.dto.UserRes;
-import team_alcoholic.jumo_server.v1.user.dto.UserUpdateReq;
-import team_alcoholic.jumo_server.v1.user.exception.UserNotFoundException;
-import team_alcoholic.jumo_server.v1.user.repository.UserRepository;
-import team_alcoholic.jumo_server.v1.user.domain.User;
 import team_alcoholic.jumo_server.v1.user.dto.UserOAuth2DTO;
+import team_alcoholic.jumo_server.v2.user.domain.NewUser;
+import team_alcoholic.jumo_server.v2.user.dto.UserRes;
+import team_alcoholic.jumo_server.v2.user.dto.UserUpdateReq;
+import team_alcoholic.jumo_server.v2.user.exception.UserNotFoundException;
+import team_alcoholic.jumo_server.v2.user.repository.UserRepository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,7 @@ public class UserService {
      */
     @Transactional
     public UserOAuth2DTO findOAuth2User(OAuth2Response oAuth2Response) {
-        User user = userRepository.findByProviderAndProviderId(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
+        NewUser user = userRepository.findByProviderAndProviderId(oAuth2Response.getProvider(), oAuth2Response.getProviderId());
 
         // 사용자가 존재하지 않을 경우 사용자를 생성 후 반환
         if (user == null) {
@@ -50,7 +52,7 @@ public class UserService {
      * 사용자 id로 사용자 조회
      * @param id
      */
-    public User findUserById(Long id) {
+    public NewUser findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
     }
 
@@ -59,21 +61,14 @@ public class UserService {
      * @param oAuth2Response
      */
     @Transactional
-    protected User createUser(OAuth2Response oAuth2Response) {
+    protected NewUser createUser(OAuth2Response oAuth2Response) {
 
         // 랜덤 프로필 이미지 URL 선택
         String randomProfileImage = getRandomProfileImageUrl();
-
         // 랜덤 닉네임 생성
         String randomNickname = generateRandomNickname();
 
-        User user = new User();
-        user.setProvider(oAuth2Response.getProvider());
-        user.setProviderId(oAuth2Response.getProviderId());
-        user.setProfileNickname(oAuth2Response.getProfileNickname());
-        user.setProfileImage(randomProfileImage);
-        user.setProfileThumbnailImage(randomProfileImage);
-        user.setJumoNickname(randomNickname);
+        NewUser user = new NewUser(oAuth2Response, randomNickname, randomProfileImage);
 
         return userRepository.save(user);
     }
@@ -86,9 +81,9 @@ public class UserService {
     @Transactional
     public UserRes updateUser(UserUpdateReq userUpdateReq, HttpSession session) {
         // DB로부터 기존 데이터 조회 및 갱신
-        User user = userRepository.findByUserUuid(UUID.fromString(userUpdateReq.getUserUuid()));
-        user.updateFromDto(userUpdateReq);
-        User result = userRepository.save(user);
+        NewUser user = userRepository.findByUserUuid(UUID.fromString(userUpdateReq.getUserUuid()));
+        user.updateUser(userUpdateReq);
+        NewUser result = userRepository.save(user);
 
         // 세션 갱신
         SecurityContext securityContext = SecurityContextHolder.getContext();

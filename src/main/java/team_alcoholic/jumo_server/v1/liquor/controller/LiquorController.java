@@ -11,7 +11,7 @@ import team_alcoholic.jumo_server.v1.liquor.dto.LiquorPostDto;
 import team_alcoholic.jumo_server.v1.liquor.dto.LiquorResDto;
 import team_alcoholic.jumo_server.v1.liquor.service.LiquorService;
 import team_alcoholic.jumo_server.v1.user.domain.User;
-import team_alcoholic.jumo_server.v1.user.service.UserService;
+import team_alcoholic.jumo_server.v1.user.service.UserServiceV1;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 
 import java.util.Objects;
@@ -22,7 +22,7 @@ import java.util.Objects;
 public class LiquorController {
 
     private final LiquorService liquorService;
-    private final UserService userService;
+    private final UserServiceV1 userService;
 
     @GetMapping("{id}")
     public LiquorResDto getLiquorById(@PathVariable("id") Long id) {
