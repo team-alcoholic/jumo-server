@@ -25,4 +25,7 @@ public class AromaController {
     ) {
         return aromaService.findSimilarAromas(aromaId, exclude, limit);
     }
+
+    // GET /aromas/ai/{liquorId} -> 추후 구현
+    // POST /aromas -> 추후 구현
 }

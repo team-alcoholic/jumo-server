@@ -3,7 +3,6 @@ package team_alcoholic.jumo_server.v2.aroma.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import team_alcoholic.jumo_server.v2.aroma.domain.Aroma;
 import team_alcoholic.jumo_server.v2.aroma.domain.AromaSimilarity;
 import team_alcoholic.jumo_server.v2.aroma.dto.AromaRes;
 import team_alcoholic.jumo_server.v2.aroma.repository.AromaSimilarityRepository;
