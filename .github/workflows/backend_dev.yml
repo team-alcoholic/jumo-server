@@ -38,7 +38,7 @@ jobs:
 
       # Gradle 빌드 수행: profile 지정
       - name: Build with Gradle Wrapper
-        run: ./gradlew build -x test
+        run: ./gradlew build
         env:
           SPRING_PROFILES_ACTIVE: dev
 
