@@ -1,22 +1,31 @@
 package team_alcoholic.jumo_server.v2.user.service;
 
+import io.awspring.cloud.s3.S3Template;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import team_alcoholic.jumo_server.v1.auth.dto.CustomOAuth2User;
 import team_alcoholic.jumo_server.v1.auth.dto.OAuth2Response;
 import team_alcoholic.jumo_server.v1.user.dto.UserOAuth2DTO;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
+import team_alcoholic.jumo_server.v2.user.domain.UserImage;
 import team_alcoholic.jumo_server.v2.user.dto.UserRes;
 import team_alcoholic.jumo_server.v2.user.dto.UserUpdateReq;
 import team_alcoholic.jumo_server.v2.user.exception.UserNotFoundException;
+import team_alcoholic.jumo_server.v2.user.repository.UserImageRepository;
 import team_alcoholic.jumo_server.v2.user.repository.UserRepository;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -25,7 +34,23 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    @Value("${spring.cloud.aws.s3.bucket}")
+    private String s3Bucket;
+
+    @Value("${spring.cloud.aws.s3.uriprefix}")
+    private String s3Endpoint;
+
     private final UserRepository userRepository;
+    private final UserImageRepository userImageRepository;
+    private final S3Template s3Template;
+
+    /**
+     * 사용자 id로 사용자 조회
+     * @param id
+     */
+    public NewUser findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
 
     /**
      * OAuth2 로그인을 시도하는 사용자가 DB에 존재하는지 탐색하는 메서드.
@@ -49,14 +74,6 @@ public class UserService {
     }
 
     /**
-     * 사용자 id로 사용자 조회
-     * @param id
-     */
-    public NewUser findUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-    }
-
-    /**
      * 사용자 생성
      * @param oAuth2Response
      */
@@ -68,8 +85,11 @@ public class UserService {
         // 랜덤 닉네임 생성
         String randomNickname = generateRandomNickname();
 
+        // User 엔티티 및 UserImage 엔티티 생성
         NewUser user = new NewUser(oAuth2Response, randomNickname, randomProfileImage);
+        UserImage userImage = new UserImage(user, randomProfileImage, randomProfileImage);
 
+        userImageRepository.save(userImage);
         return userRepository.save(user);
     }
 
@@ -79,13 +99,62 @@ public class UserService {
      * @param session
      */
     @Transactional
-    public UserRes updateUser(UserUpdateReq userUpdateReq, HttpSession session) {
-        // DB로부터 기존 데이터 조회 및 갱신
+    public UserRes updateUser(UserUpdateReq userUpdateReq, HttpSession session) throws IOException {
+        // User 엔티티 조회
         NewUser user = userRepository.findByUserUuid(UUID.fromString(userUpdateReq.getUserUuid()));
-        user.updateUser(userUpdateReq);
-        NewUser result = userRepository.save(user);
+
+        if ((userUpdateReq.getProfileImage()==null) || userUpdateReq.getProfileImage().isEmpty()) {
+            // 파일 없는 경우: 이름만 수정
+            user.updateUser(userUpdateReq.getProfileNickname());
+        }
+        else {
+            // 파일 있는 경우
+            // S3에 이미지 업로드
+            String imageUrl = uploadImageToS3(userUpdateReq.getProfileImage());
+
+            // User 엔티티 갱신
+            user.updateUser(userUpdateReq.getProfileNickname(), imageUrl);
+
+            // UserImage 엔티티 조회 및 갱신
+            // User 한 명이 여러 개의 UserImage를 가질 수 있어 List로 반환하지만, 현재는 하나의 UserImage만 사용하도록 구현해둠.
+            List<UserImage> images = userImageRepository.findByUser(user);
+            images.get(0).updateUserImage(userUpdateReq.getProfileImage().getOriginalFilename(), imageUrl);
+        }
 
         // 세션 갱신
+        updateUserSession(session, user);
+
+        return UserRes.fromEntity(user);
+    }
+
+    /**
+     * 사용자 정보 수정 시 profileImage를 S3에 업로드하는 메서드
+     * @param imageFile
+     * @throws IOException
+     */
+    private String uploadImageToS3(MultipartFile imageFile) throws IOException {
+        // 파일 이름 설정: 현재시간 + UUID + 확장자
+        String originalFilename = imageFile.getOriginalFilename();
+        int idx = originalFilename.lastIndexOf('.');
+        String ext = (idx == -1) ? "" : originalFilename.substring(idx);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String filename = "user-image/" + LocalDateTime.now().format(formatter) + "_" + UUID.randomUUID();
+        String newFilename = filename + ext;
+
+        // S3에 파일 업로드
+        InputStream inputStream = imageFile.getInputStream();
+        s3Template.upload(s3Bucket, newFilename, inputStream);
+
+        // 접근 url 반환
+        return s3Endpoint + newFilename;
+    }
+
+    /**
+     * 사용자 정보 수정 시 세션 정보도 함께 갱신하는 메서드
+     * @param session
+     * @param user
+     */
+    private static void updateUserSession(HttpSession session, NewUser user) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
 
@@ -109,8 +178,6 @@ public class UserService {
                 session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
             }
         }
-
-        return UserRes.fromEntity(result);
     }
 
     /**
@@ -118,16 +185,22 @@ public class UserService {
      */
     public String getRandomProfileImageUrl() {
         List<String> imageUrls = List.of(
-                "https://github.com/user-attachments/assets/36420b2d-e392-4b20-bcda-80d7944d9658",
-                "https://github.com/user-attachments/assets/d247aed1-131f-4160-95f9-b2d6f9880305",
-                "https://github.com/user-attachments/assets/a5d4f295-d3ed-4314-bf74-243afdd88626",
-                "https://github.com/user-attachments/assets/412be697-7602-480e-abeb-5d426ba1184f",
-                "https://github.com/user-attachments/assets/6ab2c14b-08c3-4d97-933c-c9d6a418737a"
+            "user-image/default1.png",
+            "user-image/default2.png",
+            "user-image/default3.png",
+            "user-image/default4.png",
+            "user-image/default5.png"
+            // "https://github.com/user-attachments/assets/36420b2d-e392-4b20-bcda-80d7944d9658",
+            // "https://github.com/user-attachments/assets/d247aed1-131f-4160-95f9-b2d6f9880305",
+            // "https://github.com/user-attachments/assets/a5d4f295-d3ed-4314-bf74-243afdd88626",
+            // "https://github.com/user-attachments/assets/412be697-7602-480e-abeb-5d426ba1184f",
+            // "https://github.com/user-attachments/assets/6ab2c14b-08c3-4d97-933c-c9d6a418737a"
         );
 
         Random random = new Random();
         int randomIndex = random.nextInt(imageUrls.size());
-        return imageUrls.get(randomIndex);
+
+        return s3Endpoint + imageUrls.get(randomIndex);
     }
 
     /**

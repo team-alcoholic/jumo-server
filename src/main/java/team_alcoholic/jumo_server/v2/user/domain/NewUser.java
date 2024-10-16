@@ -42,13 +42,21 @@ public class NewUser extends BaseTimeEntity {
 
     /**
      * 사용자 정보 수정 시 UserUpdateReq dto로부터 User 엔티티를 수정하는 메서드
-     * @param dto
+     * 프로필 사진도 함께 수정되었을 때 사용
+     * @param newNickname
+     * @param newThumbnailImage
      */
-    public void updateUser(UserUpdateReq dto) {
-        if (dto.getProfileNickname() != null) this.nickname = dto.getProfileNickname();
-        if (dto.getProfileThumbnailImage() != null) this.thumbnailImage = dto.getProfileThumbnailImage();
+    public void updateUser(String newNickname, String newThumbnailImage) {
+        this.nickname = newNickname;
+        this.thumbnailImage = newThumbnailImage;
+    }
 
-        // UserImage 처리는 추후 구현 예정
-        // if (dto.getProfileImage() != null) this.profileImage = dto.getProfileImage();
+    /**
+     * 사용자 정보 수정 시 UserUpdateReq dto로부터 User 엔티티를 수정하는 메서드
+     * 프로필 사진은 변경되지 않았을 때 사용
+     * @param newNickname
+     */
+    public void updateUser(String newNickname) {
+        this.nickname = newNickname;
     }
 }

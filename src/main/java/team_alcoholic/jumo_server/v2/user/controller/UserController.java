@@ -22,6 +22,7 @@ public class UserController {
 
     @Value("${service.url}")
     private String serviceUrl;
+
     private final UserService userService;
 
     /**
@@ -44,7 +45,7 @@ public class UserController {
     @PostMapping
     public String registerUser(
         @AuthenticationPrincipal OAuth2User oAuth2User,
-        @RequestBody UserUpdateReq userUpdateReq,
+        @ModelAttribute UserUpdateReq userUpdateReq,
         HttpSession session
     ) throws IOException {
         // OAuth2 인증을 진행하지 않고 접근하는 경우
@@ -66,7 +67,11 @@ public class UserController {
      * @param session
      */
     @PutMapping
-    public UserRes updateUser(@AuthenticationPrincipal OAuth2User oAuth2User, @RequestBody UserUpdateReq userUpdateReq, HttpSession session) {
+    public UserRes updateUser(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @ModelAttribute  UserUpdateReq userUpdateReq,
+        HttpSession session
+    ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return userService.updateUser(userUpdateReq, session);
     }
