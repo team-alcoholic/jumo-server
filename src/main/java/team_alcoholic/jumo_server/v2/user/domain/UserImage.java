@@ -15,5 +15,18 @@ public class UserImage extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private NewUser user;
 
-    private String url;
+    private String fileName;
+    private String fileUrl;
+
+    protected UserImage() {}
+    public UserImage(NewUser user, String fileName, String fileUrl) {
+        this.user = user;
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
+    }
+
+    public void updateUserImage(String newFileName, String newFileUrl) {
+        this.fileName = newFileName;
+        this.fileUrl = newFileUrl;
+    }
 }

@@ -1,4 +1,4 @@
-package team_alcoholic.jumo_server.v1.user.controller;
+package team_alcoholic.jumo_server.v2.user.controller;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -8,20 +8,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
-import team_alcoholic.jumo_server.v1.user.dto.UserRes;
-import team_alcoholic.jumo_server.v1.user.dto.UserUpdateReq;
-import team_alcoholic.jumo_server.v1.user.service.UserService;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
+import team_alcoholic.jumo_server.v2.user.dto.UserRes;
+import team_alcoholic.jumo_server.v2.user.dto.UserUpdateReq;
+import team_alcoholic.jumo_server.v2.user.service.UserService;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("v1/users")
+@RequestMapping("v2/users")
 public class UserController {
 
     @Value("${service.url}")
     private String serviceUrl;
+
     private final UserService userService;
 
     /**
@@ -44,7 +45,7 @@ public class UserController {
     @PostMapping
     public String registerUser(
         @AuthenticationPrincipal OAuth2User oAuth2User,
-        @RequestBody UserUpdateReq userUpdateReq,
+        @ModelAttribute UserUpdateReq userUpdateReq,
         HttpSession session
     ) throws IOException {
         // OAuth2 인증을 진행하지 않고 접근하는 경우
@@ -66,7 +67,11 @@ public class UserController {
      * @param session
      */
     @PutMapping
-    public UserRes updateUser(@AuthenticationPrincipal OAuth2User oAuth2User, @RequestBody UserUpdateReq userUpdateReq, HttpSession session) {
+    public UserRes updateUser(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @ModelAttribute  UserUpdateReq userUpdateReq,
+        HttpSession session
+    ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return userService.updateUser(userUpdateReq, session);
     }

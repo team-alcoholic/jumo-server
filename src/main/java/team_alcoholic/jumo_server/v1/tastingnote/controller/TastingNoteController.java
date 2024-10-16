@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.v1.tastingnote.dto.*;
 import team_alcoholic.jumo_server.v1.tastingnote.service.TastingNoteService;
 import team_alcoholic.jumo_server.v1.user.domain.User;
-import team_alcoholic.jumo_server.v1.user.service.UserService;
+import team_alcoholic.jumo_server.v1.user.service.UserServiceV1;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 
 import java.nio.file.AccessDeniedException;
@@ -24,7 +24,7 @@ import java.util.Objects;
 public class TastingNoteController {
 
     private final TastingNoteService tastingNoteService;
-    private final UserService userService;
+    private final UserServiceV1 userService;
 
     @GetMapping("/similar-tasting-notes")
     public TastingNoteSimilarResDto getSimilarTastingNotes(

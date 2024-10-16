@@ -11,7 +11,7 @@ import team_alcoholic.jumo_server.v1.auth.dto.KakaoResponse;
 import team_alcoholic.jumo_server.v1.auth.dto.OAuth2Response;
 import team_alcoholic.jumo_server.v1.auth.dto.CustomOAuth2User;
 import team_alcoholic.jumo_server.v1.user.dto.UserOAuth2DTO;
-import team_alcoholic.jumo_server.v1.user.service.UserService;
+import team_alcoholic.jumo_server.v1.user.service.UserServiceV1;
 
 /**
  * OAuth2 서버에서 사용자 정보를 가져와 이를 사용하여 사용자 정보를 조회하거나 생성하고 세션에 등록하는 서비스
@@ -21,7 +21,7 @@ import team_alcoholic.jumo_server.v1.user.service.UserService;
 @RequiredArgsConstructor
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserService userService;
+    private final UserServiceV1 userService;
 
     /**
      * OAuth2 사용자 정보를 가져와 사용자 정보를 조회하거나 생성하고 세션에 등록하는 메소드

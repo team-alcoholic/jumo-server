@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.v1.user.domain.User;
+import team_alcoholic.jumo_server.v2.user.domain.NewUser;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -44,5 +45,21 @@ public class UserOAuth2DTO implements Serializable {
                 .profileThumbnailImage(user.getProfileThumbnailImage())
                 .userUuid(user.getUserUuid())
                 .build();
+    }
+
+    /**
+     * NewUser 엔티티를 CustomOAuth2User에 담기 위해 UserOAuth2DTO로 변환하는 메서드.
+     * @param user
+     */
+    public static UserOAuth2DTO fromEntity(NewUser user) {
+        return UserOAuth2DTO.builder()
+            .id(user.getId())
+            .provider(user.getProvider())
+            .providerId(user.getProviderId())
+            .profileNickname(user.getNickname())
+            .profileImage(user.getThumbnailImage())
+            .profileThumbnailImage(user.getThumbnailImage())
+            .userUuid(user.getUserUuid())
+            .build();
     }
 }
