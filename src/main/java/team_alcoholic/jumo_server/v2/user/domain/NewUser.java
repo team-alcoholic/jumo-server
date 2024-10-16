@@ -7,7 +7,6 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
 import team_alcoholic.jumo_server.v1.auth.dto.OAuth2Response;
-import team_alcoholic.jumo_server.v2.user.dto.UserUpdateReq;
 
 import java.util.UUID;
 

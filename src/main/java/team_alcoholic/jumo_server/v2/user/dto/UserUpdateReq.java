@@ -1,7 +1,6 @@
 package team_alcoholic.jumo_server.v2.user.dto;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
