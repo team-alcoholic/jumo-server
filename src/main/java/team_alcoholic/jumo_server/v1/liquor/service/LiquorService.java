@@ -3,8 +3,8 @@ package team_alcoholic.jumo_server.v1.liquor.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorPostDto;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorResDto;
+import team_alcoholic.jumo_server.v1.liquor.dto.LiquorCreateReq;
+import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
 import team_alcoholic.jumo_server.v1.liquor.exception.LiquorNotFoundException;
 import team_alcoholic.jumo_server.v1.liquor.repository.LiquorRepository;
 import team_alcoholic.jumo_server.v1.user.domain.User;
@@ -18,19 +18,19 @@ public class LiquorService {
 
     private final LiquorRepository liquorRepository;
 
-    public LiquorResDto findLiquorById(Long id) {
+    public LiquorRes findLiquorById(Long id) {
         Liquor liquor = liquorRepository.findById(id).orElseThrow(
                 () -> new LiquorNotFoundException(id)
         );
-        return LiquorResDto.fromEntity(liquor);
+        return LiquorRes.from(liquor);
     }
 
-    public Long saveLiquor(LiquorPostDto liquorPostDto, User user) {
-        Liquor newLiquor = convertToEntity(liquorPostDto, user);
+    public Long saveLiquor(LiquorCreateReq liquorCreateReqDto, User user) {
+        Liquor newLiquor = convertToEntity(liquorCreateReqDto, user);
         return liquorRepository.save(newLiquor).getId();
     }
 
-    private Liquor convertToEntity(LiquorPostDto dto, User user) {
+    private Liquor convertToEntity(LiquorCreateReq dto, User user) {
         return Liquor.builder()
                 .koName(dto.getKoName())
                 .abv(formatAbv(dto.getAbv()))

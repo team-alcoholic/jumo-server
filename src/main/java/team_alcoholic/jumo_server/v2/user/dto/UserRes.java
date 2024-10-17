@@ -3,7 +3,6 @@ package team_alcoholic.jumo_server.v2.user.dto;
 
 import lombok.Builder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import team_alcoholic.jumo_server.v1.user.domain.User;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
 
 import java.util.UUID;
@@ -24,7 +23,7 @@ public record UserRes(
     public UserRes {
     }
 
-    public static UserRes fromEntity(NewUser user) {
+    public static UserRes from(NewUser user) {
         return UserRes.builder()
             .profileNickname(user.getNickname())
             .profileThumbnailImage(user.getThumbnailImage())

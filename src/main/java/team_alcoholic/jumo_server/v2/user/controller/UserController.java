@@ -69,7 +69,7 @@ public class UserController {
     @PutMapping
     public UserRes updateUser(
         @AuthenticationPrincipal OAuth2User oAuth2User,
-        @ModelAttribute  UserUpdateReq userUpdateReq,
+        @ModelAttribute UserUpdateReq userUpdateReq,
         HttpSession session
     ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }

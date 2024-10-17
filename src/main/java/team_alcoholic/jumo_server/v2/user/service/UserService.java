@@ -124,7 +124,7 @@ public class UserService {
         // 세션 갱신
         updateUserSession(session, user);
 
-        return UserRes.fromEntity(user);
+        return UserRes.from(user);
     }
 
     /**
