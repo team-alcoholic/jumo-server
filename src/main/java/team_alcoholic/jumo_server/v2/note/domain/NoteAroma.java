@@ -13,8 +13,15 @@ public class NoteAroma extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Note note;
+    private TastingNote note;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Aroma aroma;
+
+    protected NoteAroma() {}
+    public NoteAroma(TastingNote note, Aroma aroma) {
+        this.note = note;
+        this.note.getNoteAromas().add(this);
+        this.aroma = aroma;
+    }
 }

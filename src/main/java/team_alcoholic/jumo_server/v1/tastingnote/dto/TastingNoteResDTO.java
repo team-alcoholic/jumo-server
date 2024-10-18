@@ -1,13 +1,13 @@
 package team_alcoholic.jumo_server.v1.tastingnote.dto;
 
 import lombok.Builder;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorResDto;
+import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
 import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.v1.user.dto.UserRes;
 
 public record TastingNoteResDTO(
         Long id,
-        LiquorResDto liquor,
+        LiquorRes liquor,
         Integer noseScore,
         Integer palateScore,
         Integer finishScore,
@@ -31,7 +31,7 @@ public record TastingNoteResDTO(
     public static TastingNoteResDTO fromEntity(TastingNote tastingNote) {
         return TastingNoteResDTO.builder()
                 .id(tastingNote.getId())
-                .liquor(LiquorResDto.fromEntity(tastingNote.getLiquor()))
+                .liquor(LiquorRes.from(tastingNote.getLiquor()))
                 .noseScore(tastingNote.getNoseScore())
                 .palateScore(tastingNote.getPalateScore())
                 .finishScore(tastingNote.getFinishScore())

@@ -14,7 +14,7 @@ import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNote;
 import team_alcoholic.jumo_server.v1.tastingnote.dto.*;
 import team_alcoholic.jumo_server.v1.tastingnote.exception.TastingNoteNotFoundException;
 import team_alcoholic.jumo_server.v1.tastingnote.repository.AiTastingNoteRepository;
-import team_alcoholic.jumo_server.v1.tastingnote.repository.TastingNoteRepository;
+import team_alcoholic.jumo_server.v1.tastingnote.repository.TastingNoteRepositoryV1;
 import team_alcoholic.jumo_server.v1.tastingnote.repository.TastingNoteSimilarityVectorsRepository;
 import team_alcoholic.jumo_server.v1.user.domain.User;
 
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class TastingNoteService {
 
     private final TastingNoteSimilarityVectorsRepository tastingNoteSimilarityVectorsRepository;
-    private final TastingNoteRepository tastingNoteRepository;
+    private final TastingNoteRepositoryV1 tastingNoteRepositoryV1;
     private final LiquorRepository liquorRepository;
     private final AiTastingNoteRepository aiTastingNoteRepository;
     private final ChatClient chatClient;
@@ -54,7 +54,7 @@ public class TastingNoteService {
                 .orElseThrow(() -> new LiquorNotFoundException(saveTastingNoteReqDTO.getLiquorId()));
         TastingNote newTastingNote = convertToEntity(saveTastingNoteReqDTO, liquor, user);
 
-        return tastingNoteRepository.save(newTastingNote).getId();
+        return tastingNoteRepositoryV1.save(newTastingNote).getId();
     }
 
     private TastingNote convertToEntity(SaveTastingNoteReqDTO dto, Liquor liquor, User user) {
@@ -76,7 +76,7 @@ public class TastingNoteService {
     }
 
     public TastingNoteResDTO getTastingNoteById(Long id) {
-        TastingNote tastingNote = tastingNoteRepository.findById(id)
+        TastingNote tastingNote = tastingNoteRepositoryV1.findById(id)
                 .orElseThrow(() -> new TastingNoteNotFoundException(id));
 
         return TastingNoteResDTO.fromEntity(tastingNote);
@@ -86,7 +86,7 @@ public class TastingNoteService {
      * Liquor id에 해당하는 테이스팅 노트 목록을 반환
      */
     public List<TastingNoteResDTO> getTastingNoteListByLiquor(Long liquor) {
-        List<TastingNote> result = tastingNoteRepository.findTastingNotesByLiquorId(liquor);
+        List<TastingNote> result = tastingNoteRepositoryV1.findTastingNotesByLiquorId(liquor);
         return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
     }
 
@@ -95,7 +95,7 @@ public class TastingNoteService {
      */
     public List<TastingNoteResDTO> getTastingNoteListByUser(String userUuid) {
         UUID uuid = UUID.fromString(userUuid);
-        List<TastingNote> result = tastingNoteRepository.findTastingNotesByUserUuId(uuid);
+        List<TastingNote> result = tastingNoteRepositoryV1.findTastingNotesByUserUuId(uuid);
         return result.stream().map(TastingNoteResDTO::fromEntity).collect(Collectors.toList());
     }
 
@@ -114,7 +114,7 @@ public class TastingNoteService {
 
     @Transactional
     public Long updateTastingNote(Long id, UpdateTastingNoteReqDTO updateTastingNoteReqDTO, User user) throws AccessDeniedException {
-        TastingNote tastingNote = tastingNoteRepository.findById(id)
+        TastingNote tastingNote = tastingNoteRepositoryV1.findById(id)
                 .orElseThrow(() -> new TastingNoteNotFoundException(id));
 
         if (!tastingNote.getUser().getId().equals(user.getId())) {

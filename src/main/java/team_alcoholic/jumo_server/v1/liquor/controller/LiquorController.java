@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorPostDto;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorResDto;
+import team_alcoholic.jumo_server.v1.liquor.dto.LiquorCreateReq;
+import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
 import team_alcoholic.jumo_server.v1.liquor.service.LiquorService;
 import team_alcoholic.jumo_server.v1.user.domain.User;
 import team_alcoholic.jumo_server.v1.user.service.UserServiceV1;
@@ -25,13 +25,13 @@ public class LiquorController {
     private final UserServiceV1 userService;
 
     @GetMapping("{id}")
-    public LiquorResDto getLiquorById(@PathVariable("id") Long id) {
+    public LiquorRes getLiquorById(@PathVariable("id") Long id) {
         return liquorService.findLiquorById(id);
     }
 
     @PostMapping
     public ResponseEntity<Long> createLiquor(
-            @Valid @RequestBody LiquorPostDto liquorPostDto,
+            @Valid @RequestBody LiquorCreateReq liquorCreateReqDto,
             @AuthenticationPrincipal OAuth2User oAuth2User
     ) {
 
@@ -42,7 +42,7 @@ public class LiquorController {
 
         long userId = Long.parseLong(Objects.requireNonNull(oAuth2User.getAttribute("id")).toString());
         User user = userService.findUserById(userId);
-        Long createdLiquorId = liquorService.saveLiquor(liquorPostDto, user);
+        Long createdLiquorId = liquorService.saveLiquor(liquorCreateReqDto, user);
         return new ResponseEntity<>(createdLiquorId, HttpStatus.CREATED);
     }
 
