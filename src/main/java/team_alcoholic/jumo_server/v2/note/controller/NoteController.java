@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
+import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
+import team_alcoholic.jumo_server.v2.note.dto.response.NoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
 import team_alcoholic.jumo_server.v2.note.service.NoteService;
@@ -46,5 +48,14 @@ public class NoteController {
     ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return noteService.createTastingNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
+    }
+
+    /**
+     * 노트 상세 조회 API
+     * @param id 조회하려는 노트의 id
+     */
+    @GetMapping("/{id}")
+    public GeneralNoteRes getNoteById(@PathVariable Long id) {
+        return noteService.getNoteById(id);
     }
 }
