@@ -9,7 +9,7 @@ import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNote;
 import java.util.List;
 import java.util.UUID;
 
-public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> {
+public interface TastingNoteRepositoryV1 extends JpaRepository<TastingNote, Long> {
 
     @Query("SELECT tn FROM TastingNote tn WHERE tn.liquor.id = :liquorId ORDER BY tn.createdAt DESC")
     @EntityGraph(attributePaths = {"liquor", "user"})
