@@ -29,7 +29,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NoteService {
 
-    private final NoteRepository noterepository;
+    private final NoteRepository noteRepository;
     private final PurchaseNoteRepository purchaseNoteRepository;
     private final TastingNoteRepository tastingNoteRepository;
     private final UserRepository userRepository;
@@ -100,8 +100,9 @@ public class NoteService {
      * id에 해당하는 노트를 조회하는 메서드
      * @param id 조회하려는 노트의 id
      */
+    @Transactional
     public GeneralNoteRes getNoteById(Long id) {
-        Note note = noterepository.findDetailById(id)
+        Note note = noteRepository.findDetailById(id)
             .orElseThrow(() -> new NoteNotFoundException(id));
         return GeneralNoteRes.from(note);
     }
