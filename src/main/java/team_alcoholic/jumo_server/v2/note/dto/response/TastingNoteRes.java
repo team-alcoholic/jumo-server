@@ -3,6 +3,7 @@ package team_alcoholic.jumo_server.v2.note.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
+import team_alcoholic.jumo_server.v2.note.domain.NoteImage;
 import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
 import team_alcoholic.jumo_server.v2.user.dto.UserRes;
 
@@ -21,20 +22,24 @@ public class TastingNoteRes extends NoteRes{
     private String palate;
     private String finish;
 
-    public static TastingNoteRes from(TastingNote tastingNote) {
+    public static TastingNoteRes from(TastingNote note) {
         TastingNoteRes tastingNoteRes = new TastingNoteRes();
         tastingNoteRes.setId(tastingNoteRes.getId());
-        tastingNoteRes.setUser(UserRes.from(tastingNote.getUser()));
-        tastingNoteRes.setLiquor(LiquorRes.from(tastingNote.getLiquor()));
-        tastingNoteRes.setTastingAt(tastingNote.getTastingAt());
-        tastingNoteRes.setMethod(tastingNote.getMethod());
-        tastingNoteRes.setPlace(tastingNote.getPlace());
-        tastingNoteRes.setScore(tastingNote.getScore());
-        tastingNoteRes.setContent(tastingNote.getContent());
-        tastingNoteRes.setIsDetail(tastingNote.getIsDetail());
-        tastingNoteRes.setNose(tastingNote.getNose());
-        tastingNoteRes.setPalate(tastingNote.getPalate());
-        tastingNoteRes.setFinish(tastingNote.getFinish());
+        tastingNoteRes.setUser(UserRes.from(note.getUser()));
+        tastingNoteRes.setLiquor(LiquorRes.from(note.getLiquor()));
+        for (NoteImage noteImage : note.getNoteImages()) {
+            tastingNoteRes.getNoteImages().add(NoteImageRes.from(noteImage));
+        }
+
+        tastingNoteRes.setTastingAt(note.getTastingAt());
+        tastingNoteRes.setMethod(note.getMethod());
+        tastingNoteRes.setPlace(note.getPlace());
+        tastingNoteRes.setScore(note.getScore());
+        tastingNoteRes.setContent(note.getContent());
+        tastingNoteRes.setIsDetail(note.getIsDetail());
+        tastingNoteRes.setNose(note.getNose());
+        tastingNoteRes.setPalate(note.getPalate());
+        tastingNoteRes.setFinish(note.getFinish());
         return tastingNoteRes;
     }
 }

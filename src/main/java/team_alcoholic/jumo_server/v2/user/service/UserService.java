@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import team_alcoholic.jumo_server.global.common.service.CommonUtilService;
 import team_alcoholic.jumo_server.v1.auth.dto.CustomOAuth2User;
 import team_alcoholic.jumo_server.v1.auth.dto.OAuth2Response;
 import team_alcoholic.jumo_server.v1.user.dto.UserOAuth2DTO;
@@ -34,14 +35,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    @Value("${spring.cloud.aws.s3.bucket}")
-    private String s3Bucket;
-
     @Value("${spring.cloud.aws.s3.uriprefix}")
     private String s3Endpoint;
 
     private final UserRepository userRepository;
     private final UserImageRepository userImageRepository;
+    private final CommonUtilService commonUtilService;
     private final S3Template s3Template;
 
     /**
@@ -110,7 +109,7 @@ public class UserService {
         else {
             // 파일 있는 경우
             // S3에 이미지 업로드
-            String imageUrl = uploadImageToS3(userUpdateReq.getProfileImage());
+            String imageUrl = commonUtilService.uploadImageToS3(userUpdateReq.getProfileImage(), "user-image/");
 
             // User 엔티티 갱신
             user.updateUser(userUpdateReq.getProfileNickname(), imageUrl);
@@ -125,28 +124,6 @@ public class UserService {
         updateUserSession(session, user);
 
         return UserRes.from(user);
-    }
-
-    /**
-     * 사용자 정보 수정 시 profileImage를 S3에 업로드하는 메서드
-     * @param imageFile
-     * @throws IOException
-     */
-    private String uploadImageToS3(MultipartFile imageFile) throws IOException {
-        // 파일 이름 설정: 현재시간 + UUID + 확장자
-        String originalFilename = imageFile.getOriginalFilename();
-        int idx = originalFilename.lastIndexOf('.');
-        String ext = (idx == -1) ? "" : originalFilename.substring(idx);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String filename = "user-image/" + LocalDateTime.now().format(formatter) + "_" + UUID.randomUUID();
-        String newFilename = filename + ext;
-
-        // S3에 파일 업로드
-        InputStream inputStream = imageFile.getInputStream();
-        s3Template.upload(s3Bucket, newFilename, inputStream);
-
-        // 접근 url 반환
-        return s3Endpoint + newFilename;
     }
 
     /**

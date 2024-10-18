@@ -3,7 +3,7 @@ package team_alcoholic.jumo_server.v2.note.dto.request;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import team_alcoholic.jumo_server.v2.note.domain.NoteImage;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 public class TastingNoteCreateReq {
 
     private Long liquorId;
-    private List<NoteImage> noteImages;
+    private List<MultipartFile> noteImages;
 
     private LocalDate tastingAt;
     private String method;

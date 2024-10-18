@@ -1,6 +1,5 @@
 package team_alcoholic.jumo_server.v2.note.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -12,7 +11,7 @@ import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
 import team_alcoholic.jumo_server.v2.note.service.NoteService;
 
-import java.time.LocalDateTime;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("v2/notes")
@@ -30,7 +29,7 @@ public class NoteController {
     public PurchaseNoteRes createPurchaseNote(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @ModelAttribute PurchaseNoteCreateReq noteCreateReq
-    ) {
+    ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return noteService.createPurchaseNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
     }
@@ -44,7 +43,7 @@ public class NoteController {
     public TastingNoteRes createTastingNote(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @ModelAttribute TastingNoteCreateReq noteCreateReq
-    ) {
+    ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return noteService.createTastingNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
     }

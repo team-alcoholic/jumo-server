@@ -16,4 +16,12 @@ public class NoteImage extends BaseTimeEntity {
 
     private String fileName;
     private String fileUrl;
+
+    protected NoteImage() {}
+    public NoteImage(Note note, String fileName, String fileUrl) {
+        this.note = note;
+        this.note.getNoteImages().add(this);
+        this.fileName = fileName;
+        this.fileUrl = fileUrl;
+    }
 }

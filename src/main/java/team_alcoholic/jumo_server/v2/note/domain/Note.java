@@ -6,6 +6,9 @@ import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Getter
@@ -24,8 +27,8 @@ public abstract class Note extends BaseTimeEntity {
     @JoinColumn(name = "liquor_id")
     private Liquor liquor;
 
-//    @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
-//    private List<NoteImage> noteImages = new ArrayList<>();
+    @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
+    private List<NoteImage> noteImages = new ArrayList<>();
 
     protected Note() {}
     public Note(NewUser user, Liquor liquor) {
