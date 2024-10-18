@@ -58,9 +58,6 @@ public class NoteService {
         TastingNote result = tastingNoteRepository.save(tastingNote);
 
         // dto 변환 후 반환
-        TastingNoteRes tastingNoteRes = TastingNoteRes.from(result);
-        System.out.println("Service: " + tastingNoteRes);
-        return tastingNoteRes;
-//        return TastingNoteRes.from(result);
+        return TastingNoteRes.from(result);
     }
 }

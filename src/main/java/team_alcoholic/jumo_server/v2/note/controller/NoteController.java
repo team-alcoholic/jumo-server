@@ -46,10 +46,6 @@ public class NoteController {
         @ModelAttribute TastingNoteCreateReq noteCreateReq
     ) {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
-
-        TastingNoteRes tastingNoteRes = noteService.createTastingNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
-        System.out.println("Controller: " + tastingNoteRes);
-        return tastingNoteRes;
-//        return noteService.createTastingNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
+        return noteService.createTastingNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
     }
 }
