@@ -3,11 +3,15 @@ package team_alcoholic.jumo_server.v2.note.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
+import team_alcoholic.jumo_server.v2.aroma.dto.AromaRes;
+import team_alcoholic.jumo_server.v2.note.domain.NoteAroma;
 import team_alcoholic.jumo_server.v2.note.domain.NoteImage;
 import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
 import team_alcoholic.jumo_server.v2.user.dto.UserRes;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 public class TastingNoteRes extends NoteRes{
@@ -15,6 +19,7 @@ public class TastingNoteRes extends NoteRes{
     private LocalDate tastingAt;
     private String method;
     private String place;
+    private List<AromaRes> noteAromas = new ArrayList<>();
     private Integer score;
     private Boolean isDetail;
     private String content;
@@ -24,7 +29,7 @@ public class TastingNoteRes extends NoteRes{
 
     public static TastingNoteRes from(TastingNote note) {
         TastingNoteRes tastingNoteRes = new TastingNoteRes();
-        tastingNoteRes.setId(tastingNoteRes.getId());
+        tastingNoteRes.setId(note.getId());
         tastingNoteRes.setUser(UserRes.from(note.getUser()));
         tastingNoteRes.setLiquor(LiquorRes.from(note.getLiquor()));
         for (NoteImage noteImage : note.getNoteImages()) {
@@ -34,6 +39,9 @@ public class TastingNoteRes extends NoteRes{
         tastingNoteRes.setTastingAt(note.getTastingAt());
         tastingNoteRes.setMethod(note.getMethod());
         tastingNoteRes.setPlace(note.getPlace());
+        for (NoteAroma noteAroma : note.getNoteAromas()) {
+            tastingNoteRes.getNoteAromas().add(AromaRes.from(noteAroma.getAroma()));
+        }
         tastingNoteRes.setScore(note.getScore());
         tastingNoteRes.setContent(note.getContent());
         tastingNoteRes.setIsDetail(note.getIsDetail());

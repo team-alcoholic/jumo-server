@@ -2,12 +2,16 @@ package team_alcoholic.jumo_server.v2.note.domain;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "tasting_note_new")
 @DiscriminatorValue(value = "TASTING")
@@ -23,6 +27,9 @@ public class TastingNote extends Note {
     private String nose;
     private String palate;
     private String finish;
+
+    @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
+    private List<NoteAroma> noteAromas = new ArrayList<>();
 
     protected TastingNote() {}
     public TastingNote(TastingNoteCreateReq noteCreateReq, NewUser user, Liquor liquor) {

@@ -17,6 +17,7 @@ public class TastingNoteCreateReq {
     private LocalDate tastingAt;
     private String method;
     private String place;
+    private List<Long> noteAromas;
     private Integer score;
     private Boolean isDetail;
 
