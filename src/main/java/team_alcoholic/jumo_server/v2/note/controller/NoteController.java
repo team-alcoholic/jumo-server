@@ -7,7 +7,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
+import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
+import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
@@ -27,8 +29,8 @@ public class NoteController {
 
     /**
      * 구매 노트 생성 API
-     * @param oAuth2User
-     * @param noteCreateReq
+     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param noteCreateReq 구매 노트 생성 요청 객체
      */
     @PostMapping("/purchase")
     public PurchaseNoteRes createPurchaseNote(
@@ -41,8 +43,8 @@ public class NoteController {
 
     /**
      * 감상 노트 생성 API
-     * @param oAuth2User
-     * @param noteCreateReq
+     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param noteCreateReq 감상 노트 생성 요청 객체
      */
     @PostMapping("/tasting")
     public TastingNoteRes createTastingNote(
@@ -51,6 +53,36 @@ public class NoteController {
     ) throws IOException {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
         return noteService.createTastingNote(oAuth2User.getAttribute("userUuid"), noteCreateReq);
+    }
+
+    /**
+     * 구매 노트 수정 API
+     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param noteId 수정하려는 노트 id
+     * @param noteUpdateReq 구매 노트 수정 요청 객체
+     */
+    @PutMapping("/purchase/{noteId}")
+    public PurchaseNoteRes updatePurchaseNote(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @PathVariable Long noteId,
+        @ModelAttribute PurchaseNoteUpdateReq noteUpdateReq
+    ) throws IOException {
+        return noteService.updatePurchaseNote(oAuth2User, noteId, noteUpdateReq);
+    }
+
+    /**
+     * 감상 노트 수정 API
+     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param noteId 수정하려는 노트 id
+     * @param noteUpdateReq 감상 노트 수정 요청 객체
+     */
+    @PutMapping("/tasting/{noteId}")
+    public TastingNoteRes updateTastingNote(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @PathVariable Long noteId,
+        @ModelAttribute TastingNoteUpdateReq noteUpdateReq
+    ) throws IOException {
+        return noteService.updateTastingNote(oAuth2User, noteId, noteUpdateReq);
     }
 
     /**

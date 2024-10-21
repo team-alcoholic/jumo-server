@@ -2,10 +2,12 @@ package team_alcoholic.jumo_server.v2.note.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team_alcoholic.jumo_server.global.common.service.CommonUtilService;
+import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.v1.liquor.exception.LiquorNotFoundException;
 import team_alcoholic.jumo_server.v1.liquor.repository.LiquorRepository;
@@ -13,7 +15,9 @@ import team_alcoholic.jumo_server.v2.aroma.domain.Aroma;
 import team_alcoholic.jumo_server.v2.aroma.repository.AromaRepository;
 import team_alcoholic.jumo_server.v2.note.domain.*;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
+import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
+import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
@@ -102,13 +106,53 @@ public class NoteService {
     }
 
     /**
+     * 구매 노트 수정 메서드
+     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param noteId 수정하려는 노트 id
+     * @param noteUpdateReq 구매 노트 수정 요청 객체
+     */
+    @Transactional
+    public PurchaseNoteRes updatePurchaseNote(OAuth2User oAuth2User, Long noteId, PurchaseNoteUpdateReq noteUpdateReq) throws IOException {
+        // note 조회
+        PurchaseNote purchaseNote = purchaseNoteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException(noteId));
+
+        // 수정 권한 확인
+        System.out.println(!purchaseNote.getUser().getId().toString().equals(oAuth2User.getAttribute("id")));
+        if (!purchaseNote.getUser().getId().equals(oAuth2User.getAttribute("id"))) { throw new UnauthorizedException("You do not have permission to update this note"); }
+
+        // note 수정
+        purchaseNote.update(noteUpdateReq);
+
+        return PurchaseNoteRes.from(purchaseNote);
+    }
+
+    /**
+     * 감상 노트 수정 메서드
+     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param noteId 수정하려는 노트 id
+     * @param noteUpdateReq 감상 노트 수정 요청 객체
+     */
+    @Transactional
+    public TastingNoteRes updateTastingNote(OAuth2User oAuth2User, Long noteId, TastingNoteUpdateReq noteUpdateReq) throws IOException {
+        // note 조회
+        TastingNote tastingNote = tastingNoteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException(noteId));
+
+        // 수정 권한 확인
+        if (!tastingNote.getUser().getId().equals(oAuth2User.getAttribute("id"))) { throw new UnauthorizedException("You do not have permission to update this note"); }
+
+        // note 수정
+        tastingNote.update(noteUpdateReq);
+
+        return TastingNoteRes.from(tastingNote);
+    }
+
+    /**
      * id에 해당하는 노트를 조회하는 메서드
      * @param id 조회하려는 노트의 id
      */
     @Transactional
     public GeneralNoteRes getNoteById(Long id) {
-        Note note = noteRepository.findDetailById(id)
-            .orElseThrow(() -> new NoteNotFoundException(id));
+        Note note = noteRepository.findDetailById(id).orElseThrow(() -> new NoteNotFoundException(id));
         return GeneralNoteRes.from(note);
     }
 
