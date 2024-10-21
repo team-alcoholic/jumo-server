@@ -195,6 +195,10 @@ public class NoteService {
         return NoteListRes.of(newCursor, eof, noteResList);
     }
 
+    /**
+     * 사용자별 노트 조회 메서드
+     * @param userUuid 사용자 uuid
+     */
     public List<GeneralNoteRes> getNotesByUser(UUID userUuid) {
         // user 조회
         NewUser user = userRepository.findByUserUuid(userUuid);
@@ -212,6 +216,10 @@ public class NoteService {
         return noteResList;
     }
 
+    /**
+     * 주류별 노트 조회 메서드
+     * @param liquorId 주류 id
+     */
     public List<GeneralNoteRes> getNotesByLiquor(Long liquorId) {
         // liquor 조회
         Liquor liquor = liquorRepository.findById(liquorId)
