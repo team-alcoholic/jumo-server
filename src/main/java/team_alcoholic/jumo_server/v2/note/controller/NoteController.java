@@ -8,7 +8,7 @@ import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.NoteRes;
+import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
 import team_alcoholic.jumo_server.v2.note.service.NoteService;
@@ -57,5 +57,44 @@ public class NoteController {
     @GetMapping("/{id}")
     public GeneralNoteRes getNoteById(@PathVariable Long id) {
         return noteService.getNoteById(id);
+    }
+
+    /**
+     * 전체 노트 목록 페이지네이션 조회 API
+     * @param cursor 마지막으로 조회한 노트 id
+     * @param limit 최대 조회 목록 크기
+     */
+    @GetMapping
+    public NoteListRes getNotesById(
+        @RequestParam(required = false) Long cursor,
+        @RequestParam int limit
+    ) {
+        return noteService.getNotesById(cursor, limit, "ALL");
+    }
+
+    /**
+     * 구매 노트 목록 페이지네이션 조회 API
+     * @param cursor 마지막으로 조회한 노트 id
+     * @param limit 최대 조회 목록 크기
+     */
+    @GetMapping("/purchase")
+    public NoteListRes getPurchaseNotesById(
+        @RequestParam(required = false) Long cursor,
+        @RequestParam int limit
+    ) {
+        return noteService.getNotesById(cursor, limit, "PURCHASE");
+    }
+
+    /**
+     * 감상 노트 목록 페이지네이션 조회 API
+     * @param cursor 마지막으로 조회한 노트 id
+     * @param limit 최대 조회 목록 크기
+     */
+    @GetMapping("/tasting")
+    public NoteListRes getTastingNotesById(
+        @RequestParam(required = false) Long cursor,
+        @RequestParam int limit
+    ) {
+        return noteService.getNotesById(cursor, limit, "TASTING");
     }
 }

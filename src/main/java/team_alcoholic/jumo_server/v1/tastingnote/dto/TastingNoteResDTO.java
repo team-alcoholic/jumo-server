@@ -2,7 +2,7 @@ package team_alcoholic.jumo_server.v1.tastingnote.dto;
 
 import lombok.Builder;
 import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
-import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNote;
+import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNoteV1;
 import team_alcoholic.jumo_server.v1.user.dto.UserRes;
 
 public record TastingNoteResDTO(
@@ -28,7 +28,7 @@ public record TastingNoteResDTO(
     public TastingNoteResDTO {
     }
 
-    public static TastingNoteResDTO fromEntity(TastingNote tastingNote) {
+    public static TastingNoteResDTO fromEntity(TastingNoteV1 tastingNote) {
         return TastingNoteResDTO.builder()
                 .id(tastingNote.getId())
                 .liquor(LiquorRes.from(tastingNote.getLiquor()))

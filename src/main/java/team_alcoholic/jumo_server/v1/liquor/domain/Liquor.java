@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import team_alcoholic.jumo_server.v1.tastingnote.domain.AiTastingNote;
-import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNote;
+import team_alcoholic.jumo_server.v1.tastingnote.domain.TastingNoteV1;
 import team_alcoholic.jumo_server.v1.user.domain.User;
 import team_alcoholic.jumo_server.global.common.domain.BaseEntity;
 
@@ -48,6 +48,6 @@ public class Liquor extends BaseEntity {
 
 
     @OneToMany(mappedBy = "liquor", fetch = FetchType.LAZY)
-    private List<TastingNote> tastingNotes;
+    private List<TastingNoteV1> tastingNotes;
 
 }
