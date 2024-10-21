@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
+import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
 
 import java.time.LocalDate;
@@ -43,5 +44,29 @@ public class TastingNote extends Note {
         this.nose = noteCreateReq.getNose();
         this.palate = noteCreateReq.getPalate();
         this.finish = noteCreateReq.getFinish();
+    }
+
+    public void update(TastingNoteUpdateReq noteUpdateReq) {
+        if (noteUpdateReq.getTastingAt() != null) { this.tastingAt = noteUpdateReq.getTastingAt(); }
+        if (noteUpdateReq.getMethod() != null) { this.method = noteUpdateReq.getMethod(); }
+        if (noteUpdateReq.getPlace() != null) { this.place = noteUpdateReq.getPlace(); }
+        if (noteUpdateReq.getScore() != null) { this.score = noteUpdateReq.getScore(); }
+        if (noteUpdateReq.getContent() != null) { this.content = noteUpdateReq.getContent(); }
+
+        // 상세작성 활성화된 경우
+        if (noteUpdateReq.getIsDetail() != null && noteUpdateReq.getIsDetail()) {
+            this.isDetail = true;
+            this.nose = noteUpdateReq.getNose();
+            this.palate = noteUpdateReq.getPalate();
+            this.finish = noteUpdateReq.getFinish();
+        }
+        // 상세작성 비활성화된 경우
+        if (noteUpdateReq.getIsDetail() != null && !noteUpdateReq.getIsDetail()) { this.isDetail = false; }
+        // 상세작성 변경 없는 경우
+        if (noteUpdateReq.getIsDetail() == null) {
+            if (noteUpdateReq.getNose() != null) { this.nose = noteUpdateReq.getNose(); }
+            if (noteUpdateReq.getPalate() != null) { this.palate = noteUpdateReq.getPalate(); }
+            if (noteUpdateReq.getFinish() != null) { this.finish = noteUpdateReq.getFinish(); }
+        }
     }
 }

@@ -9,6 +9,7 @@ import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
 
 @Getter @Setter
 public class GeneralNoteRes {
+
     private String type;
     private PurchaseNoteRes purchaseNote;
     private TastingNoteRes tastingNote;

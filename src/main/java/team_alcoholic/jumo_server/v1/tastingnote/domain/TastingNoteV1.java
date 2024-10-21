@@ -11,7 +11,7 @@ import team_alcoholic.jumo_server.global.common.domain.BaseEntity;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TastingNote extends BaseEntity {
+public class TastingNoteV1 extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
