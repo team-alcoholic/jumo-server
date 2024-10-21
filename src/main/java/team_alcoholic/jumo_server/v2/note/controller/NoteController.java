@@ -1,6 +1,7 @@
 package team_alcoholic.jumo_server.v2.note.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,8 @@ import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
 import team_alcoholic.jumo_server.v2.note.service.NoteService;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("v2/notes")
@@ -60,7 +63,7 @@ public class NoteController {
     }
 
     /**
-     * 전체 노트 목록 페이지네이션 조회 API
+     * 서비스 전체 노트 목록 페이지네이션 조회 API
      * @param cursor 마지막으로 조회한 노트 id
      * @param limit 최대 조회 목록 크기
      */
@@ -73,9 +76,9 @@ public class NoteController {
     }
 
     /**
-     * 구매 노트 목록 페이지네이션 조회 API
+     * 서비스 전체 구매 노트 목록 페이지네이션 조회 API
      * @param cursor 마지막으로 조회한 노트 id
-     * @param limit 최대 조회 목록 크기
+     * @param limit 최대 페이지 크기
      */
     @GetMapping("/purchase")
     public NoteListRes getPurchaseNotesById(
@@ -86,9 +89,9 @@ public class NoteController {
     }
 
     /**
-     * 감상 노트 목록 페이지네이션 조회 API
+     * 서비스 전체 감상 노트 목록 페이지네이션 조회 API
      * @param cursor 마지막으로 조회한 노트 id
-     * @param limit 최대 조회 목록 크기
+     * @param limit 최대 페이지 크기
      */
     @GetMapping("/tasting")
     public NoteListRes getTastingNotesById(
@@ -96,5 +99,23 @@ public class NoteController {
         @RequestParam int limit
     ) {
         return noteService.getNotesById(cursor, limit, "TASTING");
+    }
+
+    /**
+     * 사용자가 작성한 노트 목록 조회 API
+     * @param userUuid 사용자 uuid
+     */
+    @GetMapping("/user/{userUuid}")
+    public List<GeneralNoteRes> getNotesByUser(@PathVariable UUID userUuid) {
+        return noteService.getNotesByUser(userUuid);
+    }
+
+    /**
+     * 주류에 작성된 노트 목록 조회 API
+     * @param liquorId 주류 id
+     */
+    @GetMapping("/liquor/{liquorId}")
+    public List<GeneralNoteRes> getNotesByLiquor(@PathVariable Long liquorId) {
+        return noteService.getNotesByLiquor(liquorId);
     }
 }

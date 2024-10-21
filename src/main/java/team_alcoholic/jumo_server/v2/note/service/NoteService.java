@@ -21,11 +21,13 @@ import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
 import team_alcoholic.jumo_server.v2.note.exception.NoteNotFoundException;
 import team_alcoholic.jumo_server.v2.note.repository.*;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
+import team_alcoholic.jumo_server.v2.user.exception.UserNotFoundException;
 import team_alcoholic.jumo_server.v2.user.repository.UserRepository;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -110,6 +112,12 @@ public class NoteService {
         return GeneralNoteRes.from(note);
     }
 
+    /**
+     * 서비스 전체 노트를 페이지네이션 조회하는 메서드
+     * @param cursor 마지막으로 조회한 노트의 id
+     * @param limit 조회하려는 페이지 크기
+     * @param type 조회하려는 노트의 종류
+     */
     public NoteListRes getNotesById(Long cursor, int limit, String type) {
         // 노트 목록 조회
         List<Note> notes;
@@ -129,9 +137,6 @@ public class NoteService {
                 default -> throw new IllegalArgumentException("Invalid type");
             };
         }
-        for (Note note : notes) {
-            System.out.println(note.getId());
-        }
 
         // 페이지네이션 관련 정보
         boolean eof = notes.size() < limit + 1;
@@ -144,5 +149,39 @@ public class NoteService {
             noteResList.add(GeneralNoteRes.from(note));
         }
         return NoteListRes.of(newCursor, eof, noteResList);
+    }
+
+    public List<GeneralNoteRes> getNotesByUser(UUID userUuid) {
+        // user 조회
+        NewUser user = userRepository.findByUserUuid(userUuid);
+        if (user == null) { throw new UserNotFoundException(userUuid); }
+
+        // note 조회
+        List<Note> notes = noteRepository.findListByUser(user);
+
+        // dto로 변환
+        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
+        for (Note note : notes) {
+            noteResList.add(GeneralNoteRes.from(note));
+        }
+
+        return noteResList;
+    }
+
+    public List<GeneralNoteRes> getNotesByLiquor(Long liquorId) {
+        // liquor 조회
+        Liquor liquor = liquorRepository.findById(liquorId)
+            .orElseThrow(() -> new LiquorNotFoundException(liquorId));
+
+        // note 조회
+        List<Note> notes = noteRepository.findListByLiquor(liquor);
+
+        // dto로 변환
+        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
+        for (Note note : notes) {
+            noteResList.add(GeneralNoteRes.from(note));
+        }
+
+        return noteResList;
     }
 }
