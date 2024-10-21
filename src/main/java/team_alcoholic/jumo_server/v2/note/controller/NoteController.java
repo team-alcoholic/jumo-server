@@ -135,11 +135,11 @@ public class NoteController {
 
     /**
      * 사용자가 작성한 노트 목록 조회 API
-     * @param oAuth2User 세션에서 조회하는 user 정보
+     * @param userUuid 사용자 uuid
      */
-    @GetMapping("/user")
-    public List<GeneralNoteRes> getNotesByUser(@AuthenticationPrincipal OAuth2User oAuth2User) {
-        return noteService.getNotesByUser(oAuth2User.getAttribute("userUuid"));
+    @GetMapping("/user/{userUuid}")
+    public List<GeneralNoteRes> getNotesByUser(@PathVariable UUID userUuid) {
+        return noteService.getNotesByUser(userUuid);
     }
 
     /**
