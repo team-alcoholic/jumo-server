@@ -30,13 +30,15 @@ public class TastingNoteRes extends NoteRes{
 
     public static TastingNoteRes from(TastingNote note) {
         TastingNoteRes tastingNoteRes = new TastingNoteRes();
+
         tastingNoteRes.setId(note.getId());
+        tastingNoteRes.setCreatedAt(note.getCreatedAt());
+        tastingNoteRes.setUpdatedAt(note.getUpdatedAt());
         tastingNoteRes.setUser(UserRes.from(note.getUser()));
         tastingNoteRes.setLiquor(LiquorRes.from(note.getLiquor()));
         for (NoteImage noteImage : note.getNoteImages()) {
             tastingNoteRes.getNoteImages().add(NoteImageRes.from(noteImage));
         }
-
         tastingNoteRes.setTastingAt(note.getTastingAt());
         tastingNoteRes.setMethod(note.getMethod());
         tastingNoteRes.setPlace(note.getPlace());
@@ -49,6 +51,7 @@ public class TastingNoteRes extends NoteRes{
         tastingNoteRes.setNose(note.getNose());
         tastingNoteRes.setPalate(note.getPalate());
         tastingNoteRes.setFinish(note.getFinish());
+
         return tastingNoteRes;
     }
 }

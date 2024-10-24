@@ -21,18 +21,21 @@ public class PurchaseNoteRes extends NoteRes {
 
     public static PurchaseNoteRes from(PurchaseNote note) {
         PurchaseNoteRes purchaseNoteRes = new PurchaseNoteRes();
+
         purchaseNoteRes.setId(note.getId());
+        purchaseNoteRes.setCreatedAt(note.getCreatedAt());
+        purchaseNoteRes.setUpdatedAt(note.getUpdatedAt());
         purchaseNoteRes.setUser(UserRes.from(note.getUser()));
         purchaseNoteRes.setLiquor(LiquorRes.from(note.getLiquor()));
         for (NoteImage noteImage : note.getNoteImages()) {
             purchaseNoteRes.getNoteImages().add(NoteImageRes.from(noteImage));
         }
-
         purchaseNoteRes.setPurchaseAt(note.getPurchaseAt());
         purchaseNoteRes.setPlace(note.getPlace());
         purchaseNoteRes.setPrice(note.getPrice());
         purchaseNoteRes.setVolume(note.getVolume());
         purchaseNoteRes.setContent(note.getContent());
+
         return purchaseNoteRes;
     }
 }
