@@ -12,6 +12,5 @@ public class UserUpdateReq {
     private String userUuid;
     private String profileNickname;
     private MultipartFile profileImage;
-//    private String profileImage;
-//    private String profileThumbnailImage;
+    private String defaultImage;
 }
