@@ -38,11 +38,28 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @Query("select n from Note n order by n.id desc")
     List<Note> findList(Pageable pageable);
 
+    /**
+     * 사용자별 노트 조회
+     * @param user 사용자
+     */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
     @Query("select n from Note n where n.user = :user order by n.id desc")
     List<Note> findListByUser(NewUser user);
 
+    /**
+     * 주류별 노트 조회
+     * @param liquor 주류
+     */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
     @Query("select n from Note n where n.liquor = :liquor order by n.id desc")
     List<Note> findListByLiquor(Liquor liquor);
+
+    /**
+     * 사용자별 주류별 노트 조회
+     * @param user 사용자
+     * @param liquor 주류
+     */
+    @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
+    @Query("select n from Note n where n.user = :user and n.liquor = :liquor order by n.id desc")
+    List<Note> findListByUserAndLiquor(NewUser user, Liquor liquor);
 }

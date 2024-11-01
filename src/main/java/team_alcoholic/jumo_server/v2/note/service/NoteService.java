@@ -63,10 +63,12 @@ public class NoteService {
         purchaseNoteRepository.save(purchaseNote);
 
         // NoteImage 엔티티 생성 및 저장
-        for (MultipartFile requestImage : noteCreateReq.getNoteImages()) {
-            String imageUrl = commonUtilService.uploadImageToS3(requestImage, "note-image/");
-            NoteImage noteImage = new NoteImage(purchaseNote, requestImage.getOriginalFilename(), imageUrl);
-            noteImageRepository.save(noteImage);
+        if (noteCreateReq.getNoteImages() != null && !noteCreateReq.getNoteImages().isEmpty()) {
+            for (MultipartFile requestImage : noteCreateReq.getNoteImages()) {
+                String imageUrl = commonUtilService.uploadImageToS3(requestImage, "note-image/");
+                NoteImage noteImage = new NoteImage(purchaseNote, requestImage.getOriginalFilename(), imageUrl);
+                noteImageRepository.save(noteImage);
+            }
         }
 
         // dto 변환 후 반환
@@ -88,17 +90,21 @@ public class NoteService {
         tastingNoteRepository.save(tastingNote);
 
         // NoteImage 엔티티 생성 및 저장
-        for (MultipartFile requestImage : noteCreateReq.getNoteImages()) {
-            String imageUrl = commonUtilService.uploadImageToS3(requestImage, "note-image/");
-            NoteImage noteImage = new NoteImage(tastingNote, requestImage.getOriginalFilename(), imageUrl);
-            noteImageRepository.save(noteImage);
+        if (noteCreateReq.getNoteImages() != null && !noteCreateReq.getNoteImages().isEmpty()) {
+            for (MultipartFile requestImage : noteCreateReq.getNoteImages()) {
+                String imageUrl = commonUtilService.uploadImageToS3(requestImage, "note-image/");
+                NoteImage noteImage = new NoteImage(tastingNote, requestImage.getOriginalFilename(), imageUrl);
+                noteImageRepository.save(noteImage);
+            }
         }
 
         // NoteAroma 엔티티 생성 및 저장
-        List<Aroma> requestAromas = aromaRepository.findAllById(noteCreateReq.getNoteAromas());
-        for (Aroma requestAroma : requestAromas) {
-            NoteAroma noteAroma = new NoteAroma(tastingNote, requestAroma);
-            noteAromaRepository.save(noteAroma);
+        if (noteCreateReq.getNoteAromas() != null && !noteCreateReq.getNoteAromas().isEmpty()) {
+            List<Aroma> requestAromas = aromaRepository.findAllById(noteCreateReq.getNoteAromas());
+            for (Aroma requestAroma : requestAromas) {
+                NoteAroma noteAroma = new NoteAroma(tastingNote, requestAroma);
+                noteAromaRepository.save(noteAroma);
+            }
         }
 
         // dto 변환 후 반환
@@ -206,6 +212,31 @@ public class NoteService {
 
         // note 조회
         List<Note> notes = noteRepository.findListByUser(user);
+
+        // dto로 변환
+        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
+        for (Note note : notes) {
+            noteResList.add(GeneralNoteRes.from(note));
+        }
+
+        return noteResList;
+    }
+
+    /**
+     * 사용자별 노트 조회 메서드
+     * @param userUuid 사용자 uuid
+     * @param liquorId 주류 id
+     */
+    public List<GeneralNoteRes> getNotesByUserAndLiquor(UUID userUuid, Long liquorId) {
+        // user 조회
+        NewUser user = userRepository.findByUserUuid(userUuid);
+        if (user == null) { throw new UserNotFoundException(userUuid); }
+
+        // liquor 조회
+        Liquor liquor = liquorRepository.findById(liquorId).orElseThrow(() -> new LiquorNotFoundException(liquorId));
+
+        // note 조회
+        List<Note> notes = noteRepository.findListByUserAndLiquor(user, liquor);
 
         // dto로 변환
         ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
