@@ -102,12 +102,24 @@ public class UserService {
         // User 엔티티 조회
         NewUser user = userRepository.findByUserUuid(UUID.fromString(userUpdateReq.getUserUuid()));
 
-        if ((userUpdateReq.getProfileImage()==null) || userUpdateReq.getProfileImage().isEmpty()) {
-            // 파일 없는 경우: 이름만 수정
+        // 파일 및 기본이미지 처리
+        boolean fileExist = (userUpdateReq.getProfileImage() != null) && !userUpdateReq.getProfileImage().isEmpty();
+        if (!fileExist && userUpdateReq.getDefaultImage()==null) {
+            // 파일 및 기본이미지 모두 없는 경우: 이름만 수정
             user.updateUser(userUpdateReq.getProfileNickname());
         }
-        else {
-            // 파일 있는 경우
+        else if (!fileExist && userUpdateReq.getDefaultImage() != null) {
+            // 기본이미지만 있는 경우
+            // User 엔티티 갱신
+            user.updateUser(userUpdateReq.getProfileNickname(), userUpdateReq.getDefaultImage());
+
+            // UserImage 엔티티 조회 및 갱신
+            // User 한 명이 여러 개의 UserImage를 가질 수 있어 List로 반환하지만, 현재는 하나의 UserImage만 사용하도록 구현해둠.
+            List<UserImage> images = userImageRepository.findByUser(user);
+            images.get(0).updateUserImage(userUpdateReq.getDefaultImage(), userUpdateReq.getDefaultImage());
+        }
+        else if (fileExist && userUpdateReq.getDefaultImage() == null) {
+            // 파일만 있는 경우
             // S3에 이미지 업로드
             String imageUrl = commonUtilService.uploadImageToS3(userUpdateReq.getProfileImage(), "user-image/");
 
@@ -118,6 +130,10 @@ public class UserService {
             // User 한 명이 여러 개의 UserImage를 가질 수 있어 List로 반환하지만, 현재는 하나의 UserImage만 사용하도록 구현해둠.
             List<UserImage> images = userImageRepository.findByUser(user);
             images.get(0).updateUserImage(userUpdateReq.getProfileImage().getOriginalFilename(), imageUrl);
+        }
+        else {
+            // 파일 및 기본이미지가 함께 있는 경우
+            throw new IllegalArgumentException("profileImage와 defaultImage는 함께 설정할 수 없습니다.");
         }
 
         // 세션 갱신

@@ -16,4 +16,10 @@ public class Aroma extends BaseTimeEntity {
     private AromaCategory category;
 
     private String name;
+
+    protected Aroma() {}
+    public Aroma(AromaCategory category, String name) {
+        this.category = category;
+        this.name = name;
+    }
 }

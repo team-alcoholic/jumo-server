@@ -138,8 +138,12 @@ public class NoteController {
      * @param userUuid 사용자 uuid
      */
     @GetMapping("/user/{userUuid}")
-    public List<GeneralNoteRes> getNotesByUser(@PathVariable UUID userUuid) {
-        return noteService.getNotesByUser(userUuid);
+    public List<GeneralNoteRes> getNotesByUser(
+        @PathVariable UUID userUuid,
+        @RequestParam(required = false) Long liquorId)
+    {
+        if (liquorId == null) return noteService.getNotesByUser(userUuid);
+        return noteService.getNotesByUserAndLiquor(userUuid, liquorId);
     }
 
     /**
