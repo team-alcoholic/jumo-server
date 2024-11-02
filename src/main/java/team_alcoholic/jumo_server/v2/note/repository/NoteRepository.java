@@ -18,7 +18,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @param id 노트 id
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
-    @Query("select n from Note n where n.id=:id")
+    @Query("select n from Note n left join fetch n.noteImages ni where n.id=:id order by ni.id")
     Optional<Note> findDetailById(Long id);
 
     /**
@@ -27,15 +27,15 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @param pageable paging
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
-    @Query("select n from Note n where n.id < :cursor order by n.id desc")
+    @Query("select n from Note n left join fetch n.noteImages ni where n.id < :cursor order by n.id desc, ni.id")
     List<Note> findListByCursor(Long cursor, Pageable pageable);
 
     /**
-     * 최신순 노트 페이지네이션 조회
+     * 최신순 노트 페이지네이션 조회: 첫 페이지
      * @param pageable paging
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
-    @Query("select n from Note n order by n.id desc")
+    @Query("select n from Note n left join fetch n.noteImages ni order by n.id desc, ni.id")
     List<Note> findList(Pageable pageable);
 
     /**
@@ -43,7 +43,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @param user 사용자
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
-    @Query("select n from Note n where n.user = :user order by n.id desc")
+    @Query("select n from Note n left join fetch n.noteImages ni where n.user = :user order by n.id desc, ni.id")
     List<Note> findListByUser(NewUser user);
 
     /**
@@ -51,7 +51,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @param liquor 주류
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
-    @Query("select n from Note n where n.liquor = :liquor order by n.id desc")
+    @Query("select n from Note n left join fetch n.noteImages ni where n.liquor = :liquor order by n.id desc, ni.id")
     List<Note> findListByLiquor(Liquor liquor);
 
     /**
@@ -60,6 +60,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      * @param liquor 주류
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
-    @Query("select n from Note n where n.user = :user and n.liquor = :liquor order by n.id desc")
+    @Query("select n from Note n left join fetch n.noteImages ni where n.user = :user and n.liquor = :liquor order by n.id desc, ni.id")
     List<Note> findListByUserAndLiquor(NewUser user, Liquor liquor);
 }
