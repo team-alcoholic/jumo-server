@@ -32,8 +32,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // AWS Cloud
-    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
+    // AWS S3
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3:3.2.0'
+    // AWS Secrets Manager
+//    implementation 'io.awspring.cloud:spring-cloud-starter-aws-secrets-manager-config:2.4.4'
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.2.0'
     // AWS CloudWatch logback appender
     implementation "ca.pjer:logback-awslogs-appender:1.6.0"
     // AWS OpenSearch Service

@@ -1,0 +1,6 @@
+language: "ko-KR"
+tone_instructions: "please talk softly"
+early_access: false
+enable_free_tier: true
+reviews:
+  profile: "assertive"

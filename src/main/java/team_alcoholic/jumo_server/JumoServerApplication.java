@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 
 @OpenAPIDefinition(servers = {
-	@Server(url = "/api/v1", description = "Default Server URL")
+	@Server(url = "/api", description = "Default Server URL")
 })
 @EnableJpaAuditing
 @SpringBootApplication
