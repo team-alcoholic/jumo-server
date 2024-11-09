@@ -10,7 +10,8 @@ import team_alcoholic.jumo_server.global.common.service.CommonUtilService;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.v1.liquor.exception.LiquorNotFoundException;
-import team_alcoholic.jumo_server.v1.liquor.repository.LiquorRepository;
+import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
+import team_alcoholic.jumo_server.v2.liquor.repository.NewLiquorRepository;
 import team_alcoholic.jumo_server.v2.aroma.domain.Aroma;
 import team_alcoholic.jumo_server.v2.aroma.repository.AromaRepository;
 import team_alcoholic.jumo_server.v2.note.domain.*;
@@ -42,7 +43,7 @@ public class NoteService {
     private final PurchaseNoteRepository purchaseNoteRepository;
     private final TastingNoteRepository tastingNoteRepository;
     private final UserRepository userRepository;
-    private final LiquorRepository liquorRepository;
+    private final NewLiquorRepository liquorRepository;
     private final AromaRepository aromaRepository;
     private final NoteImageRepository noteImageRepository;
     private final NoteAromaRepository noteAromaRepository;
@@ -57,7 +58,7 @@ public class NoteService {
     public PurchaseNoteRes createPurchaseNote(UUID userUuid, PurchaseNoteCreateReq noteCreateReq) throws IOException {
         // PurchaseNote 엔티티 생성 및 저장
         NewUser user = userRepository.findByUserUuid(userUuid);
-        Liquor liquor = liquorRepository.findById(noteCreateReq.getLiquorId())
+        NewLiquor liquor = liquorRepository.findById(noteCreateReq.getLiquorId())
             .orElseThrow(() -> new LiquorNotFoundException(noteCreateReq.getLiquorId()));
         PurchaseNote purchaseNote = new PurchaseNote(noteCreateReq, user, liquor);
         purchaseNoteRepository.save(purchaseNote);
@@ -84,7 +85,7 @@ public class NoteService {
     public TastingNoteRes createTastingNote(UUID userUuid, TastingNoteCreateReq noteCreateReq) throws IOException {
         // TastingNote 엔티티 생성 및 저장
         NewUser user = userRepository.findByUserUuid(userUuid);
-        Liquor liquor = liquorRepository.findById(noteCreateReq.getLiquorId())
+        NewLiquor liquor = liquorRepository.findById(noteCreateReq.getLiquorId())
             .orElseThrow(() -> new LiquorNotFoundException(noteCreateReq.getLiquorId()));
         TastingNote tastingNote = new TastingNote(noteCreateReq, user, liquor);
         tastingNoteRepository.save(tastingNote);
@@ -233,7 +234,7 @@ public class NoteService {
         if (user == null) { throw new UserNotFoundException(userUuid); }
 
         // liquor 조회
-        Liquor liquor = liquorRepository.findById(liquorId).orElseThrow(() -> new LiquorNotFoundException(liquorId));
+        NewLiquor liquor = liquorRepository.findById(liquorId).orElseThrow(() -> new LiquorNotFoundException(liquorId));
 
         // note 조회
         List<Note> notes = noteRepository.findListByUserAndLiquor(user, liquor);
@@ -253,7 +254,7 @@ public class NoteService {
      */
     public List<GeneralNoteRes> getNotesByLiquor(Long liquorId) {
         // liquor 조회
-        Liquor liquor = liquorRepository.findById(liquorId)
+        NewLiquor liquor = liquorRepository.findById(liquorId)
             .orElseThrow(() -> new LiquorNotFoundException(liquorId));
 
         // note 조회

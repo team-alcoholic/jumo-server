@@ -3,7 +3,7 @@ package team_alcoholic.jumo_server.v2.note.dto.response;
 import jakarta.persistence.DiscriminatorValue;
 import lombok.Getter;
 import lombok.Setter;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
+import team_alcoholic.jumo_server.v2.liquor.dto.LiquorRes;
 import team_alcoholic.jumo_server.v2.note.domain.NoteImage;
 import team_alcoholic.jumo_server.v2.note.domain.PurchaseNote;
 import team_alcoholic.jumo_server.v2.user.dto.UserRes;
