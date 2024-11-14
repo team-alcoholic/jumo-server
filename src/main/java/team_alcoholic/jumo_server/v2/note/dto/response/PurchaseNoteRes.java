@@ -1,9 +1,8 @@
 package team_alcoholic.jumo_server.v2.note.dto.response;
 
-import jakarta.persistence.DiscriminatorValue;
 import lombok.Getter;
 import lombok.Setter;
-import team_alcoholic.jumo_server.v2.liquor.dto.LiquorRes;
+import team_alcoholic.jumo_server.v2.liquor.dto.LiquorSimpleRes;
 import team_alcoholic.jumo_server.v2.note.domain.NoteImage;
 import team_alcoholic.jumo_server.v2.note.domain.PurchaseNote;
 import team_alcoholic.jumo_server.v2.user.dto.UserRes;
@@ -26,7 +25,7 @@ public class PurchaseNoteRes extends NoteRes {
         purchaseNoteRes.setCreatedAt(note.getCreatedAt());
         purchaseNoteRes.setUpdatedAt(note.getUpdatedAt());
         purchaseNoteRes.setUser(UserRes.from(note.getUser()));
-        purchaseNoteRes.setLiquor(LiquorRes.from(note.getLiquor()));
+        purchaseNoteRes.setLiquor(LiquorSimpleRes.from(note.getLiquor()));
         for (NoteImage noteImage : note.getNoteImages()) {
             purchaseNoteRes.getNoteImages().add(NoteImageRes.from(noteImage));
         }

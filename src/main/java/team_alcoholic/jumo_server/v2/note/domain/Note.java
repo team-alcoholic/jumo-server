@@ -2,7 +2,7 @@ package team_alcoholic.jumo_server.v2.note.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
+import org.hibernate.annotations.BatchSize;
 import team_alcoholic.jumo_server.global.common.domain.BaseTimeEntity;
 import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
@@ -29,6 +29,7 @@ public abstract class Note extends BaseTimeEntity {
     private NewLiquor liquor;
 
     @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<NoteImage> noteImages = new ArrayList<>();
 
     protected Note() {}
