@@ -32,6 +32,23 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findListByCursor(Long cursor, Pageable pageable);
 
     /**
+     * 유형별 노트 상세 조회 전 간략한 목록 조회
+     * 최신순 노트 페이지네이션 조회: 첫 페이지
+     * @param pageable paging
+     */
+    @Query("select n from Note n order by n.id desc")
+    List<Note> findSimpleList(Pageable pageable);
+
+    /**
+     * 유형별 노트 상세 조회 전 간략한 목록 조회
+     * 최신순 노트 페이지네이션 조회
+     * @param cursor 마지막으로 조회한 노트의 id
+     * @param pageable paging
+     */
+    @Query("select n from Note n where n.id < :cursor order by n.id desc")
+    List<Note> findSimpleListByCursor(Long cursor, Pageable pageable);
+
+    /**
      * 최신순 노트 페이지네이션 조회: 첫 페이지
      * @param pageable paging
      */
