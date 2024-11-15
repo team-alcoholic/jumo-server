@@ -1,7 +1,10 @@
 package team_alcoholic.jumo_server.v2.note.service;
 
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.util.Pair;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +33,7 @@ import team_alcoholic.jumo_server.v2.user.exception.UserNotFoundException;
 import team_alcoholic.jumo_server.v2.user.repository.UserRepository;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -170,36 +170,71 @@ public class NoteService {
      * @param type 조회하려는 노트의 종류
      */
     public NoteListRes getNotesById(Long cursor, int limit, String type) {
-        // 노트 목록 조회
-        List<Note> notes;
-        if (cursor == null) {
-            notes = switch (type) {
-                case "PURCHASE" -> purchaseNoteRepository.findList(PageRequest.of(0, limit + 1));
-                case "TASTING" -> tastingNoteRepository.findList(PageRequest.of(0, limit + 1));
-                case "ALL" -> noteRepository.findList(PageRequest.of(0, limit + 1));
-                default -> throw new IllegalArgumentException("Invalid type");
-            };
+
+        if ("ALL".equals(type)) {
+            List<Note> simpleNotes;
+            if (cursor == null) { simpleNotes = noteRepository.findSimpleList(PageRequest.of(0, limit+1)); }
+            else { simpleNotes = noteRepository.findSimpleListByCursor(cursor, PageRequest.of(0, limit+1)); }
+
+            // 페이지네이션 관련 정보
+            boolean eof = simpleNotes.size() < limit + 1;
+            if (!eof) { simpleNotes.remove(limit); }
+            Long newCursor = simpleNotes.isEmpty() ? -1 : (simpleNotes.get(simpleNotes.size() - 1).getId());
+
+            List<Long> purchaseNotesIdList = new ArrayList<>();
+            List<Long> tastingNotesIdList = new ArrayList<>();
+
+            for (Note note : simpleNotes) {
+                if ("PURCHASE".equals(note.getClass().getAnnotation(DiscriminatorValue.class).value())) {
+                    purchaseNotesIdList.add(note.getId());
+                }
+                else { tastingNotesIdList.add(note.getId()); }
+            }
+
+            List<PurchaseNote> purchaseNotes = (purchaseNotesIdList.isEmpty()) ? new ArrayList<>() : purchaseNoteRepository.findListByIdList(purchaseNotesIdList);
+            List<TastingNote> tastingNotes = (tastingNotesIdList.isEmpty()) ? new ArrayList<>() : tastingNoteRepository.findListByIdList(tastingNotesIdList);
+
+            List<Note> notes = new ArrayList<>();
+            notes.addAll(purchaseNotes);
+            notes.addAll(tastingNotes);
+
+            Map<Long, Note> results = new HashMap<>();
+            for (Note note : notes) {
+                results.put(note.getId(), note);
+            }
+
+            // dto로 변환
+            ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
+            for (Note simpleNote : simpleNotes) {
+                Note note = results.get(simpleNote.getId());
+                noteResList.add(GeneralNoteRes.from(note));
+            }
+            return NoteListRes.of(newCursor, eof, noteResList);
         }
         else {
-            notes = switch (type) {
-                case "PURCHASE" -> purchaseNoteRepository.findListByCursor(cursor, PageRequest.of(0, limit + 1));
-                case "TASTING" -> tastingNoteRepository.findListByCursor(cursor, PageRequest.of(0, limit + 1));
-                case "ALL" -> noteRepository.findListByCursor(cursor, PageRequest.of(0, limit + 1));
-                default -> throw new IllegalArgumentException("Invalid type");
-            };
-        }
+            List<Note> notes;
+            if (cursor == null) {
+                notes = ("PURCHASE".equals(type)) ?
+                    purchaseNoteRepository.findList(PageRequest.of(0, limit + 1)) :
+                    tastingNoteRepository.findList(PageRequest.of(0, limit + 1));
+            }
+            else {
+                notes = ("PURCHASE".equals(type)) ?
+                    purchaseNoteRepository.findListByCursor(cursor, PageRequest.of(0, limit + 1)) :
+                    tastingNoteRepository.findListByCursor(cursor, PageRequest.of(0, limit + 1));
+            }
 
-        // 페이지네이션 관련 정보
-        boolean eof = notes.size() < limit + 1;
-        if (!eof) { notes.remove(limit); }
-        Long newCursor = notes.isEmpty() ? -1 : (notes.get(notes.size() - 1).getId());
+            // 페이지네이션 관련 정보
+            boolean eof = notes.size() < limit + 1;
+            if (!eof) { notes.remove(limit); }
+            Long newCursor = notes.isEmpty() ? -1 : (notes.get(notes.size() - 1).getId());
 
-        // dto로 변환
-        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
-        for (Note note : notes) {
-            noteResList.add(GeneralNoteRes.from(note));
+            List<GeneralNoteRes> noteResList = new ArrayList<>();
+            for (Note note : notes) {
+                noteResList.add(GeneralNoteRes.from(note));
+            }
+            return NoteListRes.of(newCursor, eof, noteResList);
         }
-        return NoteListRes.of(newCursor, eof, noteResList);
     }
 
     /**
