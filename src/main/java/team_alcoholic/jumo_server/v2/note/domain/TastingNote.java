@@ -5,7 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
-import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
+import org.hibernate.annotations.BatchSize;
+import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
@@ -30,10 +31,11 @@ public class TastingNote extends Note {
     private String finish;
 
     @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
+    @BatchSize(size = 100)
     private List<NoteAroma> noteAromas = new ArrayList<>();
 
     protected TastingNote() {}
-    public TastingNote(TastingNoteCreateReq noteCreateReq, NewUser user, Liquor liquor) {
+    public TastingNote(TastingNoteCreateReq noteCreateReq, NewUser user, NewLiquor liquor) {
         super(user, liquor);
         this.tastingAt = noteCreateReq.getTastingAt();
         this.method = noteCreateReq.getMethod();

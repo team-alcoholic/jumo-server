@@ -4,6 +4,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
+import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
@@ -22,7 +23,7 @@ public class PurchaseNote extends Note {
     private String content;
 
     protected PurchaseNote() {}
-    public PurchaseNote(PurchaseNoteCreateReq noteCreateReq, NewUser user, Liquor liquor) {
+    public PurchaseNote(PurchaseNoteCreateReq noteCreateReq, NewUser user, NewLiquor liquor) {
         super(user, liquor);
         this.purchaseAt = noteCreateReq.getPurchaseAt();
         this.place = noteCreateReq.getPlace();

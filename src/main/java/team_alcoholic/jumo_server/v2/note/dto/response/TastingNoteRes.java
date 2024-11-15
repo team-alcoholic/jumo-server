@@ -1,10 +1,9 @@
 package team_alcoholic.jumo_server.v2.note.dto.response;
 
-import jakarta.persistence.DiscriminatorValue;
 import lombok.Getter;
 import lombok.Setter;
-import team_alcoholic.jumo_server.v1.liquor.dto.LiquorRes;
 import team_alcoholic.jumo_server.v2.aroma.dto.AromaRes;
+import team_alcoholic.jumo_server.v2.liquor.dto.LiquorSimpleRes;
 import team_alcoholic.jumo_server.v2.note.domain.NoteAroma;
 import team_alcoholic.jumo_server.v2.note.domain.NoteImage;
 import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
@@ -35,7 +34,7 @@ public class TastingNoteRes extends NoteRes{
         tastingNoteRes.setCreatedAt(note.getCreatedAt());
         tastingNoteRes.setUpdatedAt(note.getUpdatedAt());
         tastingNoteRes.setUser(UserRes.from(note.getUser()));
-        tastingNoteRes.setLiquor(LiquorRes.from(note.getLiquor()));
+        tastingNoteRes.setLiquor(LiquorSimpleRes.from(note.getLiquor()));
         for (NoteImage noteImage : note.getNoteImages()) {
             tastingNoteRes.getNoteImages().add(NoteImageRes.from(noteImage));
         }

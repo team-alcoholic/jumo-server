@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
+import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.note.domain.Note;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
 
@@ -52,7 +53,7 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
     @Query("select n from Note n left join fetch n.noteImages ni where n.liquor = :liquor order by n.id desc, ni.id")
-    List<Note> findListByLiquor(Liquor liquor);
+    List<Note> findListByLiquor(NewLiquor liquor);
 
     /**
      * 사용자별 주류별 노트 조회
@@ -61,5 +62,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
      */
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
     @Query("select n from Note n left join fetch n.noteImages ni where n.user = :user and n.liquor = :liquor order by n.id desc, ni.id")
-    List<Note> findListByUserAndLiquor(NewUser user, Liquor liquor);
+    List<Note> findListByUserAndLiquor(NewUser user, NewLiquor liquor);
 }
