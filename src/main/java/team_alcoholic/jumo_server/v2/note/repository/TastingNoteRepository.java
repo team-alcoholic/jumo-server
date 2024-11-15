@@ -5,12 +5,20 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import team_alcoholic.jumo_server.v2.note.domain.Note;
-import team_alcoholic.jumo_server.v2.note.domain.PurchaseNote;
 import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> {
+
+    /**
+     * noteId로 테이스팅 노트 조회
+     * @param id noteId
+     */
+    @EntityGraph(attributePaths = {"user", "liquor", "noteAromas.aroma"})
+    @Query("select tn from tasting_note_new tn where tn.id = :id order by tn.id desc")
+    Optional<TastingNote> findById(Long id);
 
     /**
      * 최신순 노트 페이지네이션 조회

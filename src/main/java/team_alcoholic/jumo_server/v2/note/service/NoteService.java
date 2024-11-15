@@ -156,7 +156,15 @@ public class NoteService {
      */
     @Transactional
     public GeneralNoteRes getNoteById(Long id) {
-        Note note = noteRepository.findDetailById(id).orElseThrow(() -> new NoteNotFoundException(id));
+        // 부모 엔티티 Note로 먼저 조회
+        Note simpleNote = noteRepository.findById(id).orElseThrow(() -> new NoteNotFoundException(id));
+        String type = simpleNote.getClass().getAnnotation(DiscriminatorValue.class).value();
+
+        // 노트 유형에 맞게 상세 조회
+        Note note;
+        if ("PURCHASE".equals(type)) { note = purchaseNoteRepository.findById(simpleNote.getId()).orElseThrow(() -> new NoteNotFoundException(simpleNote.getId())); }
+        else { note = tastingNoteRepository.findById(simpleNote.getId()).orElseThrow(() -> new NoteNotFoundException(simpleNote.getId())); }
+
         return GeneralNoteRes.from(note);
     }
 
