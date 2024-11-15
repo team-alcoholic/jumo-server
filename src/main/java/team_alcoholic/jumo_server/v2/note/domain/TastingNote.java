@@ -31,7 +31,7 @@ public class TastingNote extends Note {
     private String finish;
 
     @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
-    @BatchSize(size = 100)
+    @BatchSize(size = 20)
     private List<NoteAroma> noteAromas = new ArrayList<>();
 
     protected TastingNote() {}
