@@ -1,17 +1,14 @@
 package team_alcoholic.jumo_server.v2.note.service;
 
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorValue;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.util.Pair;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import team_alcoholic.jumo_server.global.common.service.CommonUtilService;
 import team_alcoholic.jumo_server.global.error.exception.UnauthorizedException;
-import team_alcoholic.jumo_server.v1.liquor.domain.Liquor;
 import team_alcoholic.jumo_server.v1.liquor.exception.LiquorNotFoundException;
 import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.liquor.repository.NewLiquorRepository;
@@ -170,47 +167,24 @@ public class NoteService {
      * @param type 조회하려는 노트의 종류
      */
     public NoteListRes getNotesById(Long cursor, int limit, String type) {
-
+        // 전체 노트 목록 조회인 경우
         if ("ALL".equals(type)) {
+            // 부모 엔티티 Note에 대해 우선 페이지네이션 조회
             List<Note> simpleNotes;
-            if (cursor == null) { simpleNotes = noteRepository.findSimpleList(PageRequest.of(0, limit+1)); }
-            else { simpleNotes = noteRepository.findSimpleListByCursor(cursor, PageRequest.of(0, limit+1)); }
+            if (cursor == null) { simpleNotes = noteRepository.findList(PageRequest.of(0, limit+1)); }
+            else { simpleNotes = noteRepository.findListByCursor(cursor, PageRequest.of(0, limit+1)); }
 
             // 페이지네이션 관련 정보
             boolean eof = simpleNotes.size() < limit + 1;
             if (!eof) { simpleNotes.remove(limit); }
             Long newCursor = simpleNotes.isEmpty() ? -1 : (simpleNotes.get(simpleNotes.size() - 1).getId());
 
-            List<Long> purchaseNotesIdList = new ArrayList<>();
-            List<Long> tastingNotesIdList = new ArrayList<>();
+            // 노트 유형별 상세 조회 후 dto로 변환한 리스트
+            List<GeneralNoteRes> results = getMergedChildNoteList(simpleNotes);
 
-            for (Note note : simpleNotes) {
-                if ("PURCHASE".equals(note.getClass().getAnnotation(DiscriminatorValue.class).value())) {
-                    purchaseNotesIdList.add(note.getId());
-                }
-                else { tastingNotesIdList.add(note.getId()); }
-            }
-
-            List<PurchaseNote> purchaseNotes = (purchaseNotesIdList.isEmpty()) ? new ArrayList<>() : purchaseNoteRepository.findListByIdList(purchaseNotesIdList);
-            List<TastingNote> tastingNotes = (tastingNotesIdList.isEmpty()) ? new ArrayList<>() : tastingNoteRepository.findListByIdList(tastingNotesIdList);
-
-            List<Note> notes = new ArrayList<>();
-            notes.addAll(purchaseNotes);
-            notes.addAll(tastingNotes);
-
-            Map<Long, Note> results = new HashMap<>();
-            for (Note note : notes) {
-                results.put(note.getId(), note);
-            }
-
-            // dto로 변환
-            ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
-            for (Note simpleNote : simpleNotes) {
-                Note note = results.get(simpleNote.getId());
-                noteResList.add(GeneralNoteRes.from(note));
-            }
-            return NoteListRes.of(newCursor, eof, noteResList);
+            return NoteListRes.of(newCursor, eof, results);
         }
+        // 구매/테이스팅 노트 목록 조회인 경우
         else {
             List<Note> notes;
             if (cursor == null) {
@@ -229,6 +203,7 @@ public class NoteService {
             if (!eof) { notes.remove(limit); }
             Long newCursor = notes.isEmpty() ? -1 : (notes.get(notes.size() - 1).getId());
 
+            // response 변환
             List<GeneralNoteRes> noteResList = new ArrayList<>();
             for (Note note : notes) {
                 noteResList.add(GeneralNoteRes.from(note));
@@ -246,20 +221,15 @@ public class NoteService {
         NewUser user = userRepository.findByUserUuid(userUuid);
         if (user == null) { throw new UserNotFoundException(userUuid); }
 
-        // note 조회
-        List<Note> notes = noteRepository.findListByUser(user);
+        // user를 통해 부모 엔티티 Note 목록 우선 조회
+        List<Note> simpleNotes = noteRepository.findListByUser(user);
 
-        // dto로 변환
-        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
-        for (Note note : notes) {
-            noteResList.add(GeneralNoteRes.from(note));
-        }
-
-        return noteResList;
+        // 노트 유형별 상세 조회 후 dto로 변환한 리스트 반환
+        return getMergedChildNoteList(simpleNotes);
     }
 
     /**
-     * 사용자별 노트 조회 메서드
+     * 사용자별 및 주류별 노트 조회 메서드
      * @param userUuid 사용자 uuid
      * @param liquorId 주류 id
      */
@@ -272,15 +242,10 @@ public class NoteService {
         NewLiquor liquor = liquorRepository.findById(liquorId).orElseThrow(() -> new LiquorNotFoundException(liquorId));
 
         // note 조회
-        List<Note> notes = noteRepository.findListByUserAndLiquor(user, liquor);
+        List<Note> simpleNotes = noteRepository.findListByUserAndLiquor(user, liquor);
 
-        // dto로 변환
-        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
-        for (Note note : notes) {
-            noteResList.add(GeneralNoteRes.from(note));
-        }
-
-        return noteResList;
+        // 노트 유형별 상세 조회 후 dto로 변환한 리스트 반환
+        return getMergedChildNoteList(simpleNotes);
     }
 
     /**
@@ -293,11 +258,47 @@ public class NoteService {
             .orElseThrow(() -> new LiquorNotFoundException(liquorId));
 
         // note 조회
-        List<Note> notes = noteRepository.findListByLiquor(liquor);
+        List<Note> simpleNotes = noteRepository.findListByLiquor(liquor);
 
-        // dto로 변환
-        ArrayList<GeneralNoteRes> noteResList = new ArrayList<>();
+        // 노트 유형별 상세 조회 후 dto로 변환한 리스트 반환
+        return getMergedChildNoteList(simpleNotes);
+    }
+
+    /**
+     * Note 엔티티 리스트를 받아서, 각 Note의 type별로 상세 조회를 수행한 뒤 dto 리스트로 변환하는 메서드
+     * Note type과 관계 없이 Note 목록을 조회할 때 사용
+     * @param simpleNotes 노트 type별로 상세 조회할 Note 엔티티 리스트
+     */
+    private List<GeneralNoteRes> getMergedChildNoteList(List<Note> simpleNotes) {
+        // 노트 타입에 따라 noteId 리스트 분리
+        List<Long> purchaseNotesIdList = new ArrayList<>();
+        List<Long> tastingNotesIdList = new ArrayList<>();
+        for (Note note : simpleNotes) {
+            if ("PURCHASE".equals(note.getClass().getAnnotation(DiscriminatorValue.class).value())) {
+                purchaseNotesIdList.add(note.getId());
+            }
+            else { tastingNotesIdList.add(note.getId()); }
+        }
+
+        // 노트 타입에 따라 noteId 리스트를 통해 자식 엔티티 조회
+        List<PurchaseNote> purchaseNotes = (purchaseNotesIdList.isEmpty()) ? new ArrayList<>() : purchaseNoteRepository.findListByIdList(purchaseNotesIdList);
+        List<TastingNote> tastingNotes = (tastingNotesIdList.isEmpty()) ? new ArrayList<>() : tastingNoteRepository.findListByIdList(tastingNotesIdList);
+
+        // 분리된 리스트 다시 통합
+        List<Note> notes = new ArrayList<>();
+        notes.addAll(purchaseNotes);
+        notes.addAll(tastingNotes);
+
+        // 통합된 리스트 HashMap으로 변환
+        Map<Long, Note> results = new HashMap<>();
         for (Note note : notes) {
+            results.put(note.getId(), note);
+        }
+
+        // response로 변환: 처음 조회했던 Note 리스트의 순서에 맞게 HashMap에서 가져와 변환
+        List<GeneralNoteRes> noteResList = new ArrayList<>();
+        for (Note simpleNote : simpleNotes) {
+            Note note = results.get(simpleNote.getId());
             noteResList.add(GeneralNoteRes.from(note));
         }
 
