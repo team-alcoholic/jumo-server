@@ -8,8 +8,17 @@ import team_alcoholic.jumo_server.v2.note.domain.Note;
 import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> {
+
+    /**
+     * noteId로 테이스팅 노트 조회
+     * @param id noteId
+     */
+    @EntityGraph(attributePaths = {"user", "liquor", "noteAromas.aroma"})
+    @Query("select tn from tasting_note_new tn where tn.id = :id order by tn.id desc")
+    Optional<TastingNote> findById(Long id);
 
     /**
      * 최신순 노트 페이지네이션 조회
@@ -27,4 +36,12 @@ public interface TastingNoteRepository extends JpaRepository<TastingNote, Long> 
     @EntityGraph(attributePaths = {"user", "liquor", "noteAromas.aroma"})
     @Query("select tn from tasting_note_new tn order by tn.id desc")
     List<Note> findList(Pageable pageable);
+
+    /**
+     * noteId 리스트로 테이스팅 노트 리스트 조회
+     * @param idList noteId 리스트
+     */
+    @EntityGraph(attributePaths = {"user", "liquor", "noteAromas.aroma"})
+    @Query("select tn from tasting_note_new tn where tn.id in :idList order by tn.id desc")
+    List<TastingNote> findListByIdList(List<Long> idList);
 }

@@ -29,7 +29,7 @@ public abstract class Note extends BaseTimeEntity {
     private NewLiquor liquor;
 
     @OneToMany(mappedBy = "note", fetch = FetchType.LAZY)
-    @BatchSize(size = 100)
+    @BatchSize(size = 20)
     private List<NoteImage> noteImages = new ArrayList<>();
 
     protected Note() {}
