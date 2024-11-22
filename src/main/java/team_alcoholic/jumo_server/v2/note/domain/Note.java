@@ -32,8 +32,8 @@ public abstract class Note extends BaseTimeEntity {
     @BatchSize(size = 20)
     private List<NoteImage> noteImages = new ArrayList<>();
 
-    private Long likes;
-    private Long comments;
+    private Long likes = 0L;
+    private Long comments = 0L;
 
     protected Note() {}
     public Note(NewUser user, NewLiquor liquor) {

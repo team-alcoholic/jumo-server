@@ -9,10 +9,7 @@ import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteUpdateReq;
-import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
+import team_alcoholic.jumo_server.v2.note.dto.response.*;
 import team_alcoholic.jumo_server.v2.note.service.NoteService;
 
 import java.io.IOException;
@@ -32,7 +29,7 @@ public class NoteController {
      * @param noteCreateReq 구매 노트 생성 요청 객체
      */
     @PostMapping("/purchase")
-    public PurchaseNoteRes createPurchaseNote(
+    public PurchaseNoteListRes createPurchaseNote(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @ModelAttribute PurchaseNoteCreateReq noteCreateReq
     ) throws IOException {
@@ -46,7 +43,7 @@ public class NoteController {
      * @param noteCreateReq 감상 노트 생성 요청 객체
      */
     @PostMapping("/tasting")
-    public TastingNoteRes createTastingNote(
+    public TastingNoteListRes createTastingNote(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @ModelAttribute TastingNoteCreateReq noteCreateReq
     ) throws IOException {
@@ -61,7 +58,7 @@ public class NoteController {
      * @param noteUpdateReq 구매 노트 수정 요청 객체
      */
     @PutMapping("/purchase/{noteId}")
-    public PurchaseNoteRes updatePurchaseNote(
+    public PurchaseNoteListRes updatePurchaseNote(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @PathVariable Long noteId,
         @ModelAttribute PurchaseNoteUpdateReq noteUpdateReq
@@ -76,7 +73,7 @@ public class NoteController {
      * @param noteUpdateReq 감상 노트 수정 요청 객체
      */
     @PutMapping("/tasting/{noteId}")
-    public TastingNoteRes updateTastingNote(
+    public TastingNoteListRes updateTastingNote(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @PathVariable Long noteId,
         @ModelAttribute TastingNoteUpdateReq noteUpdateReq
@@ -89,8 +86,11 @@ public class NoteController {
      * @param id 조회하려는 노트의 id
      */
     @GetMapping("/{id}")
-    public GeneralNoteRes getNoteById(@PathVariable Long id) {
-        return noteService.getNoteById(id);
+    public GeneralNoteRes getNoteById(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @PathVariable Long id
+    ) {
+        return noteService.getNoteById(oAuth2User, id);
     }
 
     /**
@@ -99,7 +99,7 @@ public class NoteController {
      * @param limit 최대 조회 목록 크기
      */
     @GetMapping
-    public NoteListRes getNotesById(
+    public GeneralNotePageRes getNotesById(
         @RequestParam(required = false) Long cursor,
         @RequestParam int limit
     ) {
@@ -112,7 +112,7 @@ public class NoteController {
      * @param limit 최대 페이지 크기
      */
     @GetMapping("/purchase")
-    public NoteListRes getPurchaseNotesById(
+    public GeneralNotePageRes getPurchaseNotesById(
         @RequestParam(required = false) Long cursor,
         @RequestParam int limit
     ) {
@@ -125,7 +125,7 @@ public class NoteController {
      * @param limit 최대 페이지 크기
      */
     @GetMapping("/tasting")
-    public NoteListRes getTastingNotesById(
+    public GeneralNotePageRes getTastingNotesById(
         @RequestParam(required = false) Long cursor,
         @RequestParam int limit
     ) {
@@ -137,7 +137,7 @@ public class NoteController {
      * @param userUuid 사용자 uuid
      */
     @GetMapping("/user/{userUuid}")
-    public List<GeneralNoteRes> getNotesByUser(
+    public List<GeneralNoteListRes> getNotesByUser(
         @PathVariable UUID userUuid,
         @RequestParam(required = false) Long liquorId)
     {
@@ -150,7 +150,9 @@ public class NoteController {
      * @param liquorId 주류 id
      */
     @GetMapping("/liquor/{liquorId}")
-    public List<GeneralNoteRes> getNotesByLiquor(@PathVariable Long liquorId) {
+    public List<GeneralNoteListRes> getNotesByLiquor(
+        @PathVariable Long liquorId
+    ) {
         return noteService.getNotesByLiquor(liquorId);
     }
 

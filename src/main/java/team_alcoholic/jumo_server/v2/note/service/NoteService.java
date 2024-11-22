@@ -19,10 +19,7 @@ import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.PurchaseNoteUpdateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteCreateReq;
 import team_alcoholic.jumo_server.v2.note.dto.request.TastingNoteUpdateReq;
-import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
-import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
+import team_alcoholic.jumo_server.v2.note.dto.response.*;
 import team_alcoholic.jumo_server.v2.note.exception.NoteLikeExistException;
 import team_alcoholic.jumo_server.v2.note.exception.NoteLikeNotFoundException;
 import team_alcoholic.jumo_server.v2.note.exception.NoteNotFoundException;
@@ -55,7 +52,7 @@ public class NoteService {
      * @param noteCreateReq 구매 노트 생성 API 요청 객체
      */
     @Transactional
-    public PurchaseNoteRes createPurchaseNote(UUID userUuid, PurchaseNoteCreateReq noteCreateReq) throws IOException {
+    public PurchaseNoteListRes createPurchaseNote(UUID userUuid, PurchaseNoteCreateReq noteCreateReq) throws IOException {
         // PurchaseNote 엔티티 생성 및 저장
         NewUser user = userRepository.findByUserUuid(userUuid);
         NewLiquor liquor = liquorRepository.findById(noteCreateReq.getLiquorId())
@@ -73,7 +70,7 @@ public class NoteService {
         }
 
         // dto 변환 후 반환
-        return PurchaseNoteRes.from(purchaseNote);
+        return PurchaseNoteListRes.from(purchaseNote);
     }
 
     /**
@@ -82,7 +79,7 @@ public class NoteService {
      * @param noteCreateReq 감상 노트 생성 API 요청 객체
      */
     @Transactional
-    public TastingNoteRes createTastingNote(UUID userUuid, TastingNoteCreateReq noteCreateReq) throws IOException {
+    public TastingNoteListRes createTastingNote(UUID userUuid, TastingNoteCreateReq noteCreateReq) throws IOException {
         // TastingNote 엔티티 생성 및 저장
         NewUser user = userRepository.findByUserUuid(userUuid);
         NewLiquor liquor = liquorRepository.findById(noteCreateReq.getLiquorId())
@@ -109,7 +106,7 @@ public class NoteService {
         }
 
         // dto 변환 후 반환
-        return TastingNoteRes.from(tastingNote);
+        return TastingNoteListRes.from(tastingNote);
     }
 
     /**
@@ -119,7 +116,7 @@ public class NoteService {
      * @param noteUpdateReq 구매 노트 수정 요청 객체
      */
     @Transactional
-    public PurchaseNoteRes updatePurchaseNote(OAuth2User oAuth2User, Long noteId, PurchaseNoteUpdateReq noteUpdateReq) throws IOException {
+    public PurchaseNoteListRes updatePurchaseNote(OAuth2User oAuth2User, Long noteId, PurchaseNoteUpdateReq noteUpdateReq) throws IOException {
         // note 조회
         PurchaseNote purchaseNote = purchaseNoteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException(noteId));
 
@@ -130,7 +127,7 @@ public class NoteService {
         // note 수정
         purchaseNote.update(noteUpdateReq);
 
-        return PurchaseNoteRes.from(purchaseNote);
+        return PurchaseNoteListRes.from(purchaseNote);
     }
 
     /**
@@ -140,7 +137,7 @@ public class NoteService {
      * @param noteUpdateReq 감상 노트 수정 요청 객체
      */
     @Transactional
-    public TastingNoteRes updateTastingNote(OAuth2User oAuth2User, Long noteId, TastingNoteUpdateReq noteUpdateReq) throws IOException {
+    public TastingNoteListRes updateTastingNote(OAuth2User oAuth2User, Long noteId, TastingNoteUpdateReq noteUpdateReq) throws IOException {
         // note 조회
         TastingNote tastingNote = tastingNoteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException(noteId));
 
@@ -150,15 +147,15 @@ public class NoteService {
         // note 수정
         tastingNote.update(noteUpdateReq);
 
-        return TastingNoteRes.from(tastingNote);
+        return TastingNoteListRes.from(tastingNote);
     }
 
     /**
-     * id에 해당하는 노트를 조회하는 메서드
+     * id에 해당하는 노트를 단건 상세 조회하는 메서드
      * @param id 조회하려는 노트의 id
      */
     @Transactional
-    public GeneralNoteRes getNoteById(Long id) {
+    public GeneralNoteRes getNoteById(OAuth2User oAuth2User, Long id) {
         // 부모 엔티티 Note로 먼저 조회
         Note simpleNote = noteRepository.findById(id).orElseThrow(() -> new NoteNotFoundException(id));
         String type = simpleNote.getClass().getAnnotation(DiscriminatorValue.class).value();
@@ -168,7 +165,16 @@ public class NoteService {
         if ("PURCHASE".equals(type)) { note = purchaseNoteRepository.findById(simpleNote.getId()).orElseThrow(() -> new NoteNotFoundException(simpleNote.getId())); }
         else { note = tastingNoteRepository.findById(simpleNote.getId()).orElseThrow(() -> new NoteNotFoundException(simpleNote.getId())); }
 
-        return GeneralNoteRes.from(note);
+        // 사용자의 좋아요 여부 확인
+        boolean isLiked;
+        if (oAuth2User == null) isLiked = false;
+        else {
+            NewUser user = userRepository.findByUserUuid(oAuth2User.getAttribute("userUuid"));
+            NoteLike noteLike = noteLikeRepository.findNoteLikeByNoteAndUser(note, user);
+            isLiked = (noteLike != null);
+        }
+
+        return GeneralNoteRes.from(note, isLiked);
     }
 
     /**
@@ -177,7 +183,7 @@ public class NoteService {
      * @param limit 조회하려는 페이지 크기
      * @param type 조회하려는 노트의 종류
      */
-    public NoteListRes getNotesById(Long cursor, int limit, String type) {
+    public GeneralNotePageRes getNotesById(Long cursor, int limit, String type) {
         // 전체 노트 목록 조회인 경우
         if ("ALL".equals(type)) {
             // 부모 엔티티 Note에 대해 우선 페이지네이션 조회
@@ -191,9 +197,9 @@ public class NoteService {
             Long newCursor = simpleNotes.isEmpty() ? -1 : (simpleNotes.get(simpleNotes.size() - 1).getId());
 
             // 노트 유형별 상세 조회 후 dto로 변환한 리스트
-            List<GeneralNoteRes> results = getMergedChildNoteList(simpleNotes);
+            List<GeneralNoteListRes> results = getMergedChildNoteList(simpleNotes);
 
-            return NoteListRes.of(newCursor, eof, results);
+            return GeneralNotePageRes.of(newCursor, eof, results);
         }
         // 구매/테이스팅 노트 목록 조회인 경우
         else {
@@ -215,11 +221,11 @@ public class NoteService {
             Long newCursor = notes.isEmpty() ? -1 : (notes.get(notes.size() - 1).getId());
 
             // response 변환
-            List<GeneralNoteRes> noteResList = new ArrayList<>();
+            List<GeneralNoteListRes> noteResList = new ArrayList<>();
             for (Note note : notes) {
-                noteResList.add(GeneralNoteRes.from(note));
+                noteResList.add(GeneralNoteListRes.from(note));
             }
-            return NoteListRes.of(newCursor, eof, noteResList);
+            return GeneralNotePageRes.of(newCursor, eof, noteResList);
         }
     }
 
@@ -227,7 +233,7 @@ public class NoteService {
      * 사용자별 노트 조회 메서드
      * @param userUuid 사용자 uuid
      */
-    public List<GeneralNoteRes> getNotesByUser(UUID userUuid) {
+    public List<GeneralNoteListRes> getNotesByUser(UUID userUuid) {
         // user 조회
         NewUser user = userRepository.findByUserUuid(userUuid);
         if (user == null) { throw new UserNotFoundException(userUuid); }
@@ -244,7 +250,7 @@ public class NoteService {
      * @param userUuid 사용자 uuid
      * @param liquorId 주류 id
      */
-    public List<GeneralNoteRes> getNotesByUserAndLiquor(UUID userUuid, Long liquorId) {
+    public List<GeneralNoteListRes> getNotesByUserAndLiquor(UUID userUuid, Long liquorId) {
         // user 조회
         NewUser user = userRepository.findByUserUuid(userUuid);
         if (user == null) { throw new UserNotFoundException(userUuid); }
@@ -263,7 +269,7 @@ public class NoteService {
      * 주류별 노트 조회 메서드
      * @param liquorId 주류 id
      */
-    public List<GeneralNoteRes> getNotesByLiquor(Long liquorId) {
+    public List<GeneralNoteListRes> getNotesByLiquor(Long liquorId) {
         // liquor 조회
         NewLiquor liquor = liquorRepository.findById(liquorId)
             .orElseThrow(() -> new LiquorNotFoundException(liquorId));
@@ -311,7 +317,7 @@ public class NoteService {
      * Note type과 관계 없이 Note 목록을 조회할 때 사용
      * @param simpleNotes 노트 type별로 상세 조회할 Note 엔티티 리스트
      */
-    private List<GeneralNoteRes> getMergedChildNoteList(List<Note> simpleNotes) {
+    private List<GeneralNoteListRes> getMergedChildNoteList(List<Note> simpleNotes) {
         // 노트 타입에 따라 noteId 리스트 분리
         List<Long> purchaseNotesIdList = new ArrayList<>();
         List<Long> tastingNotesIdList = new ArrayList<>();
@@ -338,10 +344,10 @@ public class NoteService {
         }
 
         // response로 변환: 처음 조회했던 Note 리스트의 순서에 맞게 HashMap에서 가져와 변환
-        List<GeneralNoteRes> noteResList = new ArrayList<>();
+        List<GeneralNoteListRes> noteResList = new ArrayList<>();
         for (Note simpleNote : simpleNotes) {
             Note note = results.get(simpleNote.getId());
-            noteResList.add(GeneralNoteRes.from(note));
+            noteResList.add(GeneralNoteListRes.from(note));
         }
 
         return noteResList;

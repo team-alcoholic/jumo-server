@@ -10,7 +10,7 @@ import team_alcoholic.jumo_server.v2.user.dto.UserRes;
 import java.time.LocalDate;
 
 @Getter @Setter
-public class PurchaseNoteRes extends NoteRes {
+public class PurchaseNoteListRes extends NoteListRes {
 
     private LocalDate purchaseAt;
     private String place;
@@ -18,8 +18,8 @@ public class PurchaseNoteRes extends NoteRes {
     private Integer volume;
     private String content;
 
-    public static PurchaseNoteRes from(PurchaseNote note, boolean isLiked) {
-        PurchaseNoteRes purchaseNoteRes = new PurchaseNoteRes();
+    public static PurchaseNoteListRes from(PurchaseNote note) {
+        PurchaseNoteListRes purchaseNoteRes = new PurchaseNoteListRes();
 
         purchaseNoteRes.setId(note.getId());
         purchaseNoteRes.setCreatedAt(note.getCreatedAt());
@@ -31,7 +31,6 @@ public class PurchaseNoteRes extends NoteRes {
         }
         purchaseNoteRes.setLikes(note.getLikes());
         purchaseNoteRes.setComments(note.getComments());
-        purchaseNoteRes.setLiked(isLiked);
 
         purchaseNoteRes.setPurchaseAt(note.getPurchaseAt());
         purchaseNoteRes.setPlace(note.getPlace());

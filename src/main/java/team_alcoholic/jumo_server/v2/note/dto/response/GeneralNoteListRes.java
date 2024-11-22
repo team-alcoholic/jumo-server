@@ -8,36 +8,36 @@ import team_alcoholic.jumo_server.v2.note.domain.PurchaseNote;
 import team_alcoholic.jumo_server.v2.note.domain.TastingNote;
 
 @Getter @Setter
-public class GeneralNoteRes {
+public class GeneralNoteListRes {
 
     private String type;
-    private PurchaseNoteRes purchaseNote;
-    private TastingNoteRes tastingNote;
+    private PurchaseNoteListRes purchaseNote;
+    private TastingNoteListRes tastingNote;
 
-    public static GeneralNoteRes from(Note note, boolean isLiked) {
-        GeneralNoteRes noteRes = new GeneralNoteRes();
+    public static GeneralNoteListRes from(Note note) {
+        GeneralNoteListRes noteRes = new GeneralNoteListRes();
         if (note instanceof PurchaseNote purchaseNote) {
             noteRes.setType(purchaseNote.getClass().getAnnotation(DiscriminatorValue.class).value());
-            noteRes.setPurchaseNote(PurchaseNoteRes.from(purchaseNote, isLiked));
+            noteRes.setPurchaseNote(PurchaseNoteListRes.from(purchaseNote));
         }
         else if (note instanceof TastingNote tastingNote) {
             noteRes.setType(tastingNote.getClass().getAnnotation(DiscriminatorValue.class).value());
-            noteRes.setTastingNote(TastingNoteRes.from(tastingNote, isLiked));
+            noteRes.setTastingNote(TastingNoteListRes.from(tastingNote));
         }
         return noteRes;
     }
 
-    public static GeneralNoteRes from(PurchaseNote note, boolean isLiked) {
-        GeneralNoteRes noteRes = new GeneralNoteRes();
+    public static GeneralNoteListRes from(PurchaseNote note) {
+        GeneralNoteListRes noteRes = new GeneralNoteListRes();
         noteRes.setType(note.getClass().getAnnotation(DiscriminatorValue.class).value());
-        noteRes.setPurchaseNote(PurchaseNoteRes.from(note, isLiked));
+        noteRes.setPurchaseNote(PurchaseNoteListRes.from(note));
         return noteRes;
     }
 
-    public static GeneralNoteRes from(TastingNote note, boolean isLiked) {
-        GeneralNoteRes noteRes = new GeneralNoteRes();
+    public static GeneralNoteListRes from(TastingNote note) {
+        GeneralNoteListRes noteRes = new GeneralNoteListRes();
         noteRes.setType(note.getClass().getAnnotation(DiscriminatorValue.class).value());
-        noteRes.setTastingNote(TastingNoteRes.from(note, isLiked));
+        noteRes.setTastingNote(TastingNoteListRes.from(note));
         return noteRes;
     }
 }
