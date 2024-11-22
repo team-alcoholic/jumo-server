@@ -23,6 +23,7 @@ import team_alcoholic.jumo_server.v2.note.dto.response.GeneralNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
+import team_alcoholic.jumo_server.v2.note.exception.NoteLikeExistException;
 import team_alcoholic.jumo_server.v2.note.exception.NoteNotFoundException;
 import team_alcoholic.jumo_server.v2.note.repository.*;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
@@ -44,6 +45,7 @@ public class NoteService {
     private final AromaRepository aromaRepository;
     private final NoteImageRepository noteImageRepository;
     private final NoteAromaRepository noteAromaRepository;
+    private final NoteLikeRepository noteLikeRepository;
     private final CommonUtilService commonUtilService;
 
     /**
@@ -270,6 +272,27 @@ public class NoteService {
 
         // 노트 유형별 상세 조회 후 dto로 변환한 리스트 반환
         return getMergedChildNoteList(simpleNotes);
+    }
+
+    /**
+     * noteId에 해당하는 노트에, userUuid에 해당하는 사용자의 추천을 추가하는 메서드
+     * @param userUuid 사용자의 uuid
+     * @param noteId 노트의 id
+     */
+    @Transactional
+    public Long createNoteLike(UUID userUuid, Long noteId) {
+        // note, user, notelike 조회
+        Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException(noteId));
+        NewUser user = userRepository.findByUserUuid(userUuid);
+        NoteLike noteLike = noteLikeRepository.findNoteLikeByNoteAndUser(note, user);
+        if (noteLike != null) throw new NoteLikeExistException(noteId, userUuid);
+
+        // notelike 추가 및 note 갱신
+        NoteLike savedNoteLike = noteLikeRepository.save(new NoteLike(note, user));
+        noteRepository.updateNoteByLikes(noteId, note.getLikes() + 1);
+
+        // 반환
+        return savedNoteLike.getId();
     }
 
     /**

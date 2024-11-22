@@ -3,6 +3,7 @@ package team_alcoholic.jumo_server.v2.note.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.note.domain.Note;
@@ -61,4 +62,8 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
     @Query("select n from Note n left join fetch n.noteImages ni where n.user = :user and n.liquor = :liquor order by n.id desc, ni.id")
     List<Note> findListByUserAndLiquor(NewUser user, NewLiquor liquor);
+
+    @Modifying
+    @Query("update Note n set n.likes = :noteLike where n.id = :noteId")
+    void updateNoteByLikes(Long noteId, Long noteLike);
 }

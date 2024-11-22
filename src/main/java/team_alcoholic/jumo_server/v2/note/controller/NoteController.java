@@ -154,4 +154,13 @@ public class NoteController {
     public List<GeneralNoteRes> getNotesByLiquor(@PathVariable Long liquorId) {
         return noteService.getNotesByLiquor(liquorId);
     }
+
+    @PostMapping("/{noteId}/likes")
+    public Long createNoteLike(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @PathVariable Long noteId
+    ) {
+        if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
+        return noteService.createNoteLike(oAuth2User.getAttribute("userUuid"), noteId);
+    }
 }
