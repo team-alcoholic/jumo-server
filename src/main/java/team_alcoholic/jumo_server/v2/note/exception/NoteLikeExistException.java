@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public class NoteLikeExistException extends NotFoundException {
     public NoteLikeExistException(Long noteId, UUID userUuid) {
-        super("이미 추천한 게시물입니다. note: " + noteId + ", user: " + userUuid);
+        super("이미 좋아요 표시한 게시물입니다. note: " + noteId + ", user: " + userUuid);
     }
 }

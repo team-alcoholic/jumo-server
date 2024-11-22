@@ -1,7 +1,6 @@
 package team_alcoholic.jumo_server.v2.note.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
@@ -155,12 +154,31 @@ public class NoteController {
         return noteService.getNotesByLiquor(liquorId);
     }
 
+    /**
+     * 노트 좋아요 추가 API
+     * @param oAuth2User 사용자 세션 정보
+     * @param noteId 노트 id
+     */
     @PostMapping("/{noteId}/likes")
     public Long createNoteLike(
         @AuthenticationPrincipal OAuth2User oAuth2User,
         @PathVariable Long noteId
     ) {
         if (oAuth2User == null) { throw new UnauthorizedException("로그인이 필요합니다."); }
-        return noteService.createNoteLike(oAuth2User.getAttribute("userUuid"), noteId);
+        return noteService.toggleNoteLike(oAuth2User.getAttribute("userUuid"), noteId, "create");
+    }
+
+    /**
+     * 노트 좋아요 취소 API
+     * @param oAuth2User 사용자 세션 정보
+     * @param noteId 노트 id
+     */
+    @DeleteMapping("/{noteId}/likes")
+    public Long deleteNoteLike(
+        @AuthenticationPrincipal OAuth2User oAuth2User,
+        @PathVariable Long noteId
+    ) {
+        if (oAuth2User == null) throw new UnauthorizedException("로그인이 필요합니다.");
+        return noteService.toggleNoteLike(oAuth2User.getAttribute("userUuid"), noteId, "delete");
     }
 }

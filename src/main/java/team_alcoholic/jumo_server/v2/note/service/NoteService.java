@@ -24,6 +24,7 @@ import team_alcoholic.jumo_server.v2.note.dto.response.NoteListRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.PurchaseNoteRes;
 import team_alcoholic.jumo_server.v2.note.dto.response.TastingNoteRes;
 import team_alcoholic.jumo_server.v2.note.exception.NoteLikeExistException;
+import team_alcoholic.jumo_server.v2.note.exception.NoteLikeNotFoundException;
 import team_alcoholic.jumo_server.v2.note.exception.NoteNotFoundException;
 import team_alcoholic.jumo_server.v2.note.repository.*;
 import team_alcoholic.jumo_server.v2.user.domain.NewUser;
@@ -275,24 +276,34 @@ public class NoteService {
     }
 
     /**
-     * noteId에 해당하는 노트에, userUuid에 해당하는 사용자의 추천을 추가하는 메서드
+     * noteId에 해당하는 노트에, userUuid에 해당하는 사용자의 좋아요를 toggle하는 메서드
+     * 조회 결과 좋아요 기록이 있다면 취소, 좋아요 기록이 없다면 추가함
      * @param userUuid 사용자의 uuid
      * @param noteId 노트의 id
      */
     @Transactional
-    public Long createNoteLike(UUID userUuid, Long noteId) {
+    public Long toggleNoteLike(UUID userUuid, Long noteId, String type) {
         // note, user, notelike 조회
         Note note = noteRepository.findById(noteId).orElseThrow(() -> new NoteNotFoundException(noteId));
         NewUser user = userRepository.findByUserUuid(userUuid);
         NoteLike noteLike = noteLikeRepository.findNoteLikeByNoteAndUser(note, user);
-        if (noteLike != null) throw new NoteLikeExistException(noteId, userUuid);
 
-        // notelike 추가 및 note 갱신
-        NoteLike savedNoteLike = noteLikeRepository.save(new NoteLike(note, user));
-        noteRepository.updateNoteByLikes(noteId, note.getLikes() + 1);
+        // 좋아요 기록 존재하지 않는 경우: notelike 추가 및 note 갱신
+        if (noteLike == null) {
+            // 좋아요 표시하지 않은 노트에 좋아요를 취소하는 경우
+            if ("delete".equals(type)) throw new NoteLikeNotFoundException(noteId, userUuid);
+            noteLikeRepository.save(new NoteLike(note, user));
+            note.increaseNoteLike();
+        }
+        // 좋아요 기록 존재하는 경우: notelike 삭제 및 note 갱신
+        else {
+            // 이미 좋아요 표시한 노트에 좋아요를 다시 추가하는 경우
+            if ("create".equals(type)) throw new NoteLikeExistException(noteId, userUuid);
+            noteLikeRepository.delete(noteLike);
+            note.decreaseNoteLike();
+        }
 
-        // 반환
-        return savedNoteLike.getId();
+        return note.getLikes();
     }
 
     /**

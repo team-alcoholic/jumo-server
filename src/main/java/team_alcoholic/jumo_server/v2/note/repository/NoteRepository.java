@@ -62,8 +62,4 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @EntityGraph(attributePaths = {"user", "liquor", "noteImages"})
     @Query("select n from Note n left join fetch n.noteImages ni where n.user = :user and n.liquor = :liquor order by n.id desc, ni.id")
     List<Note> findListByUserAndLiquor(NewUser user, NewLiquor liquor);
-
-    @Modifying
-    @Query("update Note n set n.likes = :noteLike where n.id = :noteId")
-    void updateNoteByLikes(Long noteId, Long noteLike);
 }

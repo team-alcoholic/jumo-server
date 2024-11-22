@@ -40,4 +40,7 @@ public abstract class Note extends BaseTimeEntity {
         this.user = user;
         this.liquor = liquor;
     }
+
+    public void increaseNoteLike() { this.likes++; }
+    public void decreaseNoteLike() { this.likes--; }
 }
