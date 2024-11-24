@@ -19,4 +19,7 @@ public abstract class NoteRes {
     private UserRes user;
     private LiquorSimpleRes liquor;
     private List<NoteImageRes> noteImages = new ArrayList<>();
+    private Long likes;
+    private Long comments;
+    private boolean isLiked;
 }

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
-public class TastingNoteRes extends NoteRes {
+public class TastingNoteListRes extends NoteListRes {
 
     private LocalDate tastingAt;
     private String method;
@@ -27,8 +27,8 @@ public class TastingNoteRes extends NoteRes {
     private String palate;
     private String finish;
 
-    public static TastingNoteRes from(TastingNote note, boolean isLiked) {
-        TastingNoteRes tastingNoteRes = new TastingNoteRes();
+    public static TastingNoteListRes from(TastingNote note) {
+        TastingNoteListRes tastingNoteRes = new TastingNoteListRes();
 
         tastingNoteRes.setId(note.getId());
         tastingNoteRes.setCreatedAt(note.getCreatedAt());
@@ -40,7 +40,6 @@ public class TastingNoteRes extends NoteRes {
         }
         tastingNoteRes.setLikes(note.getLikes());
         tastingNoteRes.setComments(note.getComments());
-        tastingNoteRes.setLiked(isLiked);
 
         tastingNoteRes.setTastingAt(note.getTastingAt());
         tastingNoteRes.setMethod(note.getMethod());

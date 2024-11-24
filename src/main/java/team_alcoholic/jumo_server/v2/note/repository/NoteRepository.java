@@ -3,6 +3,7 @@ package team_alcoholic.jumo_server.v2.note.repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import team_alcoholic.jumo_server.v2.liquor.domain.NewLiquor;
 import team_alcoholic.jumo_server.v2.note.domain.Note;

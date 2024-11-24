@@ -32,9 +32,15 @@ public abstract class Note extends BaseTimeEntity {
     @BatchSize(size = 20)
     private List<NoteImage> noteImages = new ArrayList<>();
 
+    private Long likes = 0L;
+    private Long comments = 0L;
+
     protected Note() {}
     public Note(NewUser user, NewLiquor liquor) {
         this.user = user;
         this.liquor = liquor;
     }
+
+    public void increaseNoteLike() { this.likes++; }
+    public void decreaseNoteLike() { this.likes--; }
 }
