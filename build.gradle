@@ -43,6 +43,10 @@ dependencies {
     implementation 'org.opensearch.client:opensearch-rest-client:2.11.0'
     implementation 'org.opensearch.client:opensearch-java:2.6.0'
 
+    // Spring Data ElasticSearch
+    implementation 'org.springframework.data:spring-data-elasticsearch:5.4.0'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
     // JSON
     implementation 'jakarta.json:jakarta.json-api'
 

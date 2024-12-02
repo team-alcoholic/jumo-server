@@ -1,0 +1,29 @@
+{
+  "analysis": {
+    "char_filter": {
+      "jaso_filter": {
+        "type": "icu_normalizer",
+        "name": "nfc",
+        "mode": "decompose"
+      }
+    },
+    "tokenizer": {
+      "ngram_tokenizer": {
+        "type": "ngram",
+        "min_gram": 2,
+        "max_gram": 3,
+        "token_chars": ["letter", "digit"]
+      }
+    },
+    "analyzer": {
+      "ngram_analyzer": {
+        "tokenizer": "ngram_tokenizer"
+      },
+      "jaso_ngram_analyzer": {
+        "char_filter": ["jaso_filter"],
+        "tokenizer": "ngram_tokenizer",
+        "filter": []
+      }
+    }
+  }
+}
